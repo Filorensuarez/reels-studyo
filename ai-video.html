@@ -254,7 +254,7 @@ function makeSegments(seconds){
  return parts;
 }
 function makePrompt(settings,part,count){
- const comedyIndex=count<=1?0:Math.round((part.index-1)/(count-1)*(comedyBeats.length-1));
+ const comedyIndex=count<=1?0:Math.floor((part.index-1)/(count-1)*(comedyBeats.length-1));
  const beat=settings.preset==='courtyard'?comedyBeats[comedyIndex]:beats[(part.index-1)%beats.length];
  return [
   'Generate a SINGLE, ORIGINAL '+part.duration.toFixed(1)+'-second vertical 9:16 AI video shot. Sequence: shot '+part.index+' of '+count+'.',
