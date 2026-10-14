@@ -58,8 +58,6 @@ async def face_swap(
                    "--target-path", str(target), "--output-path", str(output),
                    "--processors", "face_swapper",
                    "--output-video-encoder", "libx264"]
-        if preserve_audio:
-            command += ["--skip-audio", "false"]
         proc = await asyncio.create_subprocess_exec(
             *command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
         try:
