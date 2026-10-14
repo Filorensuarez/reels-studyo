@@ -26,3 +26,24 @@
 .preview .phone{cursor:pointer}
 .preview .phone:active{outline:2px solid #a8ffbf}
 @media(max-width:400px){.quickGrid button{font-size:12px;padding:10px 6px}.quickEdit,.bestMoments{padding:9px}.moment-actions{grid-template-columns:1fr}}
+
+
+/* Video üzerine işlenen konuşma altyazıları */
+.subtitlePanel{margin:16px 0;padding:14px;border-radius:14px;background:#13253b;border:1px solid #41617d;text-align:left}
+.subtitlePanel h3{font-size:16px;margin:0 0 6px}
+.subtitlePanel .full{width:100%;padding:13px 8px;background:#395a7e}
+.subtitlePanel .note{font-size:12px;line-height:1.55}
+.subtitleActions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.subtitleActions button{min-height:43px;font-size:12px;padding:10px 6px}
+.subtitleActions button:first-child{grid-column:1 / -1;background:#346d52}
+.subtitleOptions{margin:9px 0}
+.subtitleEntries{display:grid;gap:10px;margin-top:10px;text-align:left}
+.subtitleItem{padding:10px;border-radius:11px;background:#1a3049;border:1px solid #45617f}
+.subtitleItemHeader{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;font-weight:750}
+.subtitleItemActions{display:flex;gap:5px}
+.subtitleItemActions button{font-size:11px;padding:7px 8px}
+.subtitleTimeGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.subtitleItem textarea{display:block;margin-top:10px;background:#101b2f;color:#fff;width:100%;min-height:70px;resize:vertical;border:1px solid #536078;border-radius:10px;padding:11px;font-size:14px;line-height:1.45;font-family:inherit}
+.subtitleItem textarea:focus{border-color:#a8ffbf;outline:none}
+.subtitleItem input[type=number]{font-variant-numeric:tabular-nums;font-size:14px;padding:9px 7px}
+@media(max-width:400px){.subtitlePanel{padding:10px}.subtitleTimeGrid{gap:6px}.subtitleItemActions button{padding:7px 5px;font-size:10px}}
