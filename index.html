@@ -34,6 +34,7 @@ button{border:0;border-radius:11px;font:inherit;font-weight:700;font-size:13px;p
 <header><div class="logo"><div class="mark">R</div><div><h1>Reels Stüdyo</h1><p>Reels videonu tek ekranda hazırla</p></div></div><div class="install-wrap"><span class="tag">Ücretsiz · Hesap ve filigran yok</span><button type="button" class="install-btn" id="installBtn">Ana ekrana ekle</button></div></header>
 <main>
  <section>
+  <div class="panel" style="border-color:#4c7c7b;background:linear-gradient(130deg,#173441,#151f33)"><h2>Video Kesme ve Birleştirme</h2><p class="hint">Telefonundan videoları seç, kes, böl, sırasını değiştir ve 9:16 Reels olarak birleştir. Mistik ve sakin müzikler uygulamanın içinde hazırdır.</p><a href="./editor.html" style="display:block;text-align:center;text-decoration:none;border-radius:11px;background:#a8ffbf;color:#10221f;padding:13px;font-weight:800">Video düzenleyiciyi aç →</a></div>
   <p class="install-tip" id="installTip" role="status">Önce konuyu yaz; sahneleri hazırla ve ön izlemeyi başlat. <a class="quicklink" href="#previewPanel">Ön izlemeye git ↓</a></p>
   <div class="panel">
    <h2>1. Konunu ve metnini belirle</h2>
@@ -57,7 +58,19 @@ Sen ne düşünüyorsun? | Dürüstlük senin için ne ifade ediyor?</textarea>
    <label for="photos">Sahne fotoğrafları (isteğe bağlı)</label><input type="file" id="photos" accept="image/*" multiple><span id="imageCount">Fotoğraf eklenmedi. Animasyonlu arka plan kullanılacak.</span>
    <p class="hint">Seçtiğin fotoğraflar sahnelere sırayla dağıtılır. Fotoğraf eklemezsen renkli hareketli arka plan kullanılır.</p>
    <div class="grid">
-    <div><label for="music">Arka plan müziği</label><input id="music" type="file" accept="audio/*"></div>
+    <div><label for="builtInMusic">Hazır müzikler (ücretsiz)</label><select id="builtInMusic">
+<option value="elokuma">El Okuma Atmosferi — önerilen</option>
+<option value="mistik">Mistik Piyano</option>
+<option value="meditasyon">Derin Meditasyon</option>
+<option value="kadim">Kadim Ezgi</option>
+<option value="gizem">Gizemli İzler</option>
+<option value="huzur">Huzurlu Esinti</option>
+<option value="odak">Sessiz Odak</option>
+<option value="tanitim">Yumuşak Tanıtım</option>
+<option value="custom">Kendi müziğimi kullanacağım</option><option value="none">Müzik olmasın</option>
+</select><button type="button" id="musicTestBtn" class="secondary" style="margin-top:9px;width:100%">♪ Müziği dinle</button>
+<p class="hint">Müzikler uygulama içinde üretilir. Dosya veya üyelik gerektirmez.</p>
+<label for="music">Kendi müziğin (isteğe bağlı)</label><input id="music" type="file" accept="audio/*"></div>
     <div><label for="voice">Seslendirme kaydı</label><input id="voice" type="file" accept="audio/*"></div>
    </div>
    <label for="musicVol">Müzik sesi: <span id="musicVolNum">%28</span></label><input type="range" id="musicVol" min="0" max="100" value="28">
@@ -90,12 +103,38 @@ Sen ne düşünüyorsun? | Dürüstlük senin için ne ifade ediyor?</textarea>
  </aside>
 </main>
 <footer>Reels Stüdyo · Ücretsiz tarayıcı uygulaması · İçerikler cihazında işlenir. Eklediğin fotoğraf ve ses dosyaları yeniden açtığında otomatik yüklenmez. Kullandığın içeriklerin yayın haklarını kontrol et.</footer>
+<script src="./music-library.js"></script>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
 const canvas = $('videoCanvas'); const ctx = canvas.getContext('2d', {alpha:false});
 let imageAssets=[], previewT=0, previewPlaying=false, previewStart=0, prevTick=0, busy=false, lastObjectURL=null;
 let deferredInstallPrompt = null;
+let activeMusicCtx=null,activeMusicSource=null,musicPlayGeneration=0;
+function hasSound(){return $('builtInMusic').value!=='none'||Boolean($('voice').files.length);}
+async function loadChosenMusic(ctx){
+ const id=$('builtInMusic').value;
+ if(id==='none')return null;
+ if(id==='custom'){
+  const f=$('music').files[0];if(!f)throw Error('Müzik dosyası seçilmedi. Hazır müziklerden birini seçebilirsin.');
+  return await ctx.decodeAudioData(await f.arrayBuffer());
+ }
+ if(!window.ReelsMusic)throw Error('Müzik kütüphanesi yüklenemedi. Uygulamayı yenile.');
+ return window.ReelsMusic.createBuffer(ctx,id);
+}
+function stopMusic(){musicPlayGeneration++;try{activeMusicSource?.stop()}catch(e){}try{activeMusicCtx?.close()}catch(e){}activeMusicCtx=null;activeMusicSource=null;$('musicTestBtn').textContent='♪ Müziği dinle';}
+async function playMusic(position=0){
+ stopMusic();const id=$('builtInMusic').value;if(id==='none')return;
+ const token=musicPlayGeneration,C=window.AudioContext||window.webkitAudioContext;
+ if(!C)throw Error('Tarayıcı müzik çalmayı desteklemiyor.');
+ const c=new C();activeMusicCtx=c;await c.resume();const b=await loadChosenMusic(c);
+ if(!b||token!==musicPlayGeneration){await c.close();return;}
+ const src=c.createBufferSource(),gain=c.createGain();src.buffer=b;src.loop=true;gain.gain.value=Number($('musicVol').value)/100;
+ src.connect(gain);gain.connect(c.destination);activeMusicSource=src;src.start(0,position % b.duration);$('musicTestBtn').textContent='■ Müziği durdur';
+}
+$('musicTestBtn').addEventListener('click',()=>{if(activeMusicCtx){stopMusic();return;}playMusic().catch(e=>{stopMusic();setStatus(e.message,'error')});});
+$('builtInMusic').addEventListener('change',()=>{stopMusic();saveDraft();});
+$('music').addEventListener('change',stopMusic);
 window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); deferredInstallPrompt=event; document.getElementById('installTip').textContent='Uygulama hazır. "Ana ekrana ekle" düğmesine dokunabilirsin.'; });
 window.addEventListener('appinstalled', () => { deferredInstallPrompt=null; document.getElementById('installTip').textContent='Reels Stüdyo ana ekranına eklendi.'; });
 document.getElementById('installBtn').addEventListener('click', async()=>{
@@ -142,12 +181,19 @@ ctx.textAlign='center';ctx.font='600 22px Arial, sans-serif';ctx.fillStyle=textC
 ctx.fillStyle='#ffffff42';rrect(75,1223,570,7,4);ctx.fill();ctx.fillStyle=pal[2];rrect(75,1223,570*(tFixed/duration),7,4);ctx.fill();
 $('sceneLabel').textContent=`Sahne ${si+1} / ${scenes.length}`;$('timeLabel').textContent=`${fmt(tFixed)} / ${fmt(duration)}`;$('progress').style.width=(100*tFixed/duration)+'%';}
 function fmt(t){t=Math.floor(t);return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')}
-function stopPreview(){previewPlaying=false;$('previewBtn').textContent='Ön izlemeyi oynat';}
+function stopPreview(){previewPlaying=false;stopMusic();$('previewBtn').textContent='Ön izlemeyi oynat';}
 function animatePreview(now){if(!previewPlaying||busy)return;previewT=(now-previewStart)/1000;let dur=totalDuration();if(previewT>=dur){previewT=0;stopPreview();render(0);return;}render(previewT);requestAnimationFrame(animatePreview)}
-function startPreview(){if(busy)return;if(previewPlaying){stopPreview();return;}const dur=totalDuration();if(previewT>=dur)previewT=0;previewPlaying=true;previewStart=performance.now()-previewT*1000;$('previewBtn').textContent='Ön izlemeyi durdur';requestAnimationFrame(animatePreview)}
+async function startPreview(){if(busy)return;if(previewPlaying){stopPreview();return;}const dur=totalDuration();if(previewT>=dur)previewT=0;previewPlaying=true;$('previewBtn').textContent='Ön izlemeyi durdur';try{await playMusic(previewT)}catch(e){setStatus('Müzik: '+e.message,'error')}if(!previewPlaying)return;previewStart=performance.now()-previewT*1000;requestAnimationFrame(animatePreview)}
 function jumpScene(delta){if(busy)return;stopPreview();let seconds=Number($('seconds').value),idx=Math.floor(previewT/seconds),scenes=parseScenes();idx=Math.max(0,Math.min(scenes.length-1,idx+delta));previewT=idx*seconds;render(previewT)}
 function loadPhotos(){for(const img of imageAssets){if(img._src)URL.revokeObjectURL(img._src)}imageAssets=[];const fs=[...$('photos').files].slice(0,12);if(!fs.length){$('imageCount').textContent='Fotoğraf eklenmedi. Animasyonlu arka plan kullanılacak.';render(previewT);return;}Promise.all(fs.map(f=>new Promise(resolve=>{const url=URL.createObjectURL(f),i=new Image();i.onload=()=>{i._src=url;resolve(i)};i.onerror=()=>{URL.revokeObjectURL(url);resolve(null)};i.src=url}))).then(arr=>{imageAssets=arr.filter(Boolean);$('imageCount').textContent=`${imageAssets.length} fotoğraf yüklendi.`;render(previewT)})}
-async function prepAudio(audioCtx,destination,videoDur){const tracks=[];for(const item of [{id:'music',volume:Number($('musicVol').value)/100,loop:true},{id:'voice',volume:1,loop:false}]){const file=$(item.id).files[0];if(!file)continue;try{const buffer=await audioCtx.decodeAudioData(await file.arrayBuffer());const src=audioCtx.createBufferSource(),gain=audioCtx.createGain();src.buffer=buffer;src.loop=item.loop;gain.gain.value=item.volume;src.connect(gain);gain.connect(destination);tracks.push(src);}catch(e){throw Error(`${item.id==='music'?'Müzik':'Seslendirme'} dosyası okunamadı. MP3 veya WAV deneyin.`);}}return tracks;}
+async function prepAudio(audioCtx,destination,videoDur){
+ const tracks=[];const m=await loadChosenMusic(audioCtx);
+ if(m){const s=audioCtx.createBufferSource(),g=audioCtx.createGain();s.buffer=m;s.loop=true;g.gain.value=Number($('musicVol').value)/100;s.connect(g);g.connect(destination);tracks.push(s);}
+ const file=$('voice').files[0];
+ if(file){let b;try{b=await audioCtx.decodeAudioData(await file.arrayBuffer())}catch(e){throw Error('Seslendirme dosyası çözümlenemedi. MP3 veya WAV dene.');}
+ const s=audioCtx.createBufferSource(),g=audioCtx.createGain();s.buffer=b;s.loop=false;g.gain.value=1;s.connect(g);g.connect(destination);tracks.push(s);}
+ return tracks;
+}
 function mimeChoice(withAudio){
 // MP4 containers carrying Opus audio are not reliably accepted by Instagram.
 // If AAC MP4 cannot be recorded natively, create WebM and transcode to H.264/AAC MP4.
@@ -165,13 +211,13 @@ async function convertToMP4(input){setStatus('MP4 dönüştürücü indiriliyor 
 try{const [classWorkerURL,coreURL,wasmURL]=await Promise.all([blobURL(pkg+'/814.ffmpeg.js','text/javascript'),blobURL(core+'/ffmpeg-core.js','text/javascript'),blobURL(core+'/ffmpeg-core.wasm','application/wasm')]);urls=[classWorkerURL,coreURL,wasmURL];await ff.load({classWorkerURL,coreURL,wasmURL});setStatus('MP4 dönüştürülüyor. Sayfayı açık tut. Özellikle telefonda biraz sürebilir.');await ff.writeFile('reels.webm',new Uint8Array(await input.arrayBuffer()));let rc=await ff.exec(['-i','reels.webm','-c:v','libx264','-preset','ultrafast','-crf','29','-pix_fmt','yuv420p','-movflags','+faststart','-c:a','aac','-b:a','128k','reels.mp4']);if(rc!==0){rc=await ff.exec(['-i','reels.webm','-c:v','libx264','-preset','ultrafast','-crf','29','-pix_fmt','yuv420p','-an','reels.mp4']);}if(rc!==0)throw Error('MP4 kodlama hatası');const data=await ff.readFile('reels.mp4');return new Blob([data],{type:'video/mp4'});}finally{urls.forEach(URL.revokeObjectURL);try{ff.terminate()}catch(e){}}}
 async function exportVideo(){if(busy)return;if(!window.MediaRecorder||!canvas.captureStream){setStatus('Bu tarayıcı video kaydı desteklemiyor. Güncel Chrome veya Safari ile dene.','error');return;}busy=true;stopPreview();$('exportBtn').disabled=true;$('previewBtn').disabled=true;$('downloadSlot').innerHTML='';let recorder,audioCtx,stream,srcs=[],canvasStream,rafId,cleaned=false;let fallbackBlob=null;const quality=Number($('resolution').value),fps=Number($('fps').value),duration=totalDuration();
 const cleanup=async()=>{if(cleaned)return;cleaned=true;cancelAnimationFrame(rafId);for(const s of srcs){try{s.stop()}catch(e){}}try{recorder?.stream?.getTracks().forEach(t=>t.stop())}catch(e){}try{canvasStream?.getTracks().forEach(t=>t.stop())}catch(e){}try{await audioCtx?.close()}catch(e){}canvas.width=720;canvas.height=1280;previewT=0;render(0);busy=false;$('exportBtn').disabled=false;$('previewBtn').disabled=false;};
-try{canvas.width=quality;canvas.height=Math.round(quality*16/9);render(0);const mime=mimeChoice(Boolean($('music').files.length||$('voice').files.length));if(!mime)throw Error('Bu tarayıcıda desteklenen video formatı bulunamadı.');canvasStream=canvas.captureStream(fps);let tracks=[...canvasStream.getVideoTracks()];let sources=[];
-if($('music').files.length||$('voice').files.length){audioCtx=new (window.AudioContext||window.webkitAudioContext)();const dest=audioCtx.createMediaStreamDestination();srcs=await prepAudio(audioCtx,dest,duration);tracks.push(...dest.stream.getAudioTracks());}
+try{canvas.width=quality;canvas.height=Math.round(quality*16/9);render(0);if($('builtInMusic').value==='custom'&&!$('music').files.length)throw Error('Kendi müziğin seçildi ancak dosya eklenmedi.');const mime=mimeChoice(hasSound());if(!mime)throw Error('Bu tarayıcıda desteklenen video formatı bulunamadı.');canvasStream=canvas.captureStream(fps);let tracks=[...canvasStream.getVideoTracks()];let sources=[];
+if(hasSound()){audioCtx=new (window.AudioContext||window.webkitAudioContext)();const dest=audioCtx.createMediaStreamDestination();srcs=await prepAudio(audioCtx,dest,duration);tracks.push(...dest.stream.getAudioTracks());}
 stream=new MediaStream(tracks);let chunks=[];recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:quality===1080?6000000:quality===720?3500000:2000000});const stopped=new Promise((resolve,reject)=>{recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};recorder.onerror=e=>reject(e.error||Error('Kayıt hatası'));recorder.onstop=()=>resolve(new Blob(chunks,{type:mime.split(';')[0]}));});recorder.start(500);if(audioCtx){await audioCtx.resume();srcs.forEach(s=>s.start(0));}const started=performance.now();setStatus(`Video kaydediliyor: ${fmt(duration)}. Gerçek zamanlı işlem sırasında ekranı kapatma ve başka sekmeye geçme.`);
 await new Promise(resolve=>{function step(){let sec=Math.max(0,(performance.now()-started)/1000);render(Math.min(sec,duration-.001));if(sec>=duration){resolve();return;}rafId=requestAnimationFrame(step)}step()});recorder.stop();const blob=await stopped;fallbackBlob=blob;if(!blob.size)throw Error('Video kaydı boş döndü. Başka bir tarayıcı deneyin.');if(mime.startsWith('video/mp4')){downloadBlob(blob,'reels-video.mp4');setStatus('MP4 video oluşturuldu. İndirerek Instagram Reels paylaşım ekranına yükleyebilirsin.','ok');}else{try{const mp4=await convertToMP4(blob);downloadBlob(mp4,'reels-video.mp4');setStatus('MP4 video oluşturuldu. Instagram Reels için hazır.','ok')}catch(convErr){console.warn(convErr);downloadBlob(blob,'reels-video.webm');setStatus('Video WEBM olarak oluşturuldu; MP4 dönüşümü tamamlanamadı. Bu dosyayı Instagram’a doğrudan yüklemeyebilirsin. İnternet bağlantısı ve cihaz belleğini kontrol ederek tekrar dene. Ayrıntı: '+convErr.message,'error');}}}
 catch(e){console.error(e);setStatus('Video oluşturulamadı: '+(e.message||String(e)),'error');if(fallbackBlob?.size)downloadBlob(fallbackBlob,'reels-video.webm');}finally{await cleanup();}}
 $('draftBtn').addEventListener('click',draft);$('sampleBtn').addEventListener('click',example);$('previewBtn').addEventListener('click',startPreview);$('prevBtn').addEventListener('click',()=>jumpScene(-1));$('nextBtn').addEventListener('click',()=>jumpScene(1));$('photos').addEventListener('change',loadPhotos);$('musicVol').addEventListener('input',()=>{$('musicVolNum').textContent='%'+$('musicVol').value});$('exportBtn').addEventListener('click',exportVideo);
-const saveIds=['topic','kind','template','title','script','musicVol','handle','cta','seconds','resolution','fps'];
+const saveIds=['topic','kind','template','title','script','builtInMusic','musicVol','handle','cta','seconds','resolution','fps'];
 try {const saved=JSON.parse(localStorage.getItem('reels-studyo-draft-v1')||'null');if(saved&&typeof saved==='object'){saveIds.forEach(id=>{if(typeof saved[id]==='string'||typeof saved[id]==='number')$(id).value=saved[id]});$('musicVolNum').textContent='%'+$('musicVol').value;}}catch(e){}
 function saveDraft(){try{const draft={};saveIds.forEach(id=>draft[id]=$(id).value);localStorage.setItem('reels-studyo-draft-v1',JSON.stringify(draft));}catch(e){}}
 for(const id of saveIds){ $(id).addEventListener('input',()=>{saveDraft();if(!busy){stopPreview();previewT=0;render(0)}});$(id).addEventListener('change',saveDraft); }
