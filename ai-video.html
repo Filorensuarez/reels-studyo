@@ -56,7 +56,7 @@ footer{font-size:12px;color:var(--muted);padding-bottom:30px}
 <div class="hero">
  <span class="pill">Yeni · Gerçekçi AI Video Atölyesi</span>
  <h1>Referans videodaki tarzda yeni sahneler hazırla</h1>
- <p>Örnek: Kalabalık bir eğlence mekânında dans eden insan boyunda, fotogerçekçi beyaz bir köpek. Sahneni yaz, 9:16 video komutlarını üret, AI video aracıyla klipleri oluştur ve Reels Stüdyo'da birleştir.</p>
+ <p>Birinci örnekte fotogerçekçi dev bir köpek dans ediyor. İkinci örnekte ise gece açık hava eğlencesinde kısa Türkçe konuşmanın ardından komik bir dans başlıyor. İki tarz için de özgün 9:16 sahne komutları hazırlayabilirsin.</p>
  <p class="note">Bu sayfa gerçekçi yapay zekâ videosunu tek başına oluşturmaz. Görüntü üretimi için Google Flow, Kling veya Runway gibi harici bir hizmet kullanılır; bu hizmetlerin üyelik, kredi ve kullanım sınırları olabilir.</p>
 </div>
 <div class="layout">
@@ -80,7 +80,8 @@ footer{font-size:12px;color:var(--muted);padding-bottom:30px}
  <h2>2. Üretmek istediğin sahneyi tarif et</h2>
  <label for="preset">Hazır video türü</label>
  <select id="preset">
-  <option value="dog">Örnekteki gibi: Dev beyaz köpek dans ediyor</option>
+  <option value="dog">1. Referans: Dev beyaz köpek dans ediyor</option>
+  <option value="courtyard">2. Referans: Gece komedisi · konuşma ve dans</option>
   <option value="cat">Gerçekçi konuşan veya dans eden kedi</option>
   <option value="animal">İnsanlarla etkileşen fantastik hayvan</option>
   <option value="palm">Spiritüel el analizi · 3D sinematik</option>
@@ -106,6 +107,9 @@ footer{font-size:12px;color:var(--muted);padding-bottom:30px}
    <select id="sound"><option value="party">Parti müziği + ortam sesleri</option><option value="comedy">Komik efektler + ortam sesleri</option><option value="cinematic">Sinematik atmosfer</option><option value="none">Sessiz / sonra müzik ekle</option></select>
   </div>
  </div>
+ <label for="dialogue">Kısa Türkçe konuşma repliği (isteğe bağlı)</label>
+ <textarea id="dialogue" rows="2" maxlength="350" placeholder="Örnek: Arkadaşlar, müziği duyunca kendimi tutamıyorum!"></textarea>
+ <p class="note">Konuşmanın dudak hareketiyle uyumu, kullandığın AI video hizmetine bağlıdır. Türkçe altyazıları daha sonra Reels düzenleyicisinde ekleyebilirsin.</p>
  <label for="extra">Özel ayrıntılar (isteğe bağlı)</label>
  <textarea id="extra" rows="2" placeholder="Örnek: İnsanlar şaşırsın, bir kişi cep telefonuyla çekim yapsın."></textarea>
  <div class="buttons">
@@ -156,6 +160,7 @@ footer{font-size:12px;color:var(--muted);padding-bottom:30px}
 const $=id=>document.getElementById(id);
 const presets={
  dog:{subject:'An enormous, photorealistic fluffy white dog with a natural canine face, lifelike fur, black nose and four anatomically consistent paws, standing upright on its hind legs at human height',action:'The friendly dog dances playfully, gently moving its front paws in rhythm; surprised bystanders smile, laugh and film the unusual scene with their phones',place:'a crowded modern nightclub with a staircase, dancing adults and party guests',light:'vibrant deep red club lights, warm highlights, physically accurate shadows',extra:'Keep the same individual dog and background people across all shots. Natural paw gestures, believable contact with the floor.'},
+ courtyard:{subject:'An original, fictional, expressive adult male party guest with a natural face, short dark hair, a red-and-white striped long sleeve shirt and dark trousers; realistic proportions, natural human hands and gestures',action:'The guest delivers one short humorous line in Turkish with expressive facial gestures, turns toward his friends and bursts into playful, exaggerated but natural dancing; bystanders laugh, clap and respond, a traditional drum is briefly visible',place:'a nighttime open-air neighborhood celebration in a paved apartment courtyard, modest residential building facades, adults gathered on bright plastic chairs and friends standing nearby',light:'warm outdoor tungsten bulbs, believable night shadows, practical on-camera phone light, natural skin tones',extra:'Start with a speaking close-up and transition into full-body energetic comedic dance, small crowd reactions, and a brief drummer reveal. Avoid recreating anyone in the original reference or any copied logos and account names.',dialogue:'Arkadaşlar, müziği duyunca kendimi tutamıyorum!'},
  cat:{subject:'An oversized photorealistic fluffy orange tabby cat with consistent feline anatomy and expressive eyes',action:'The cat stands up and dances with comedic confidence while adults react with delight',place:'a lively social event with a small crowd',light:'warm golden party lights and cinematic accent lighting',extra:'Keep the animal identifiable and anatomically consistent; no human face on the animal.'},
  animal:{subject:'A large fantastical but believable friendly white wolf with convincing fur and detailed animal anatomy',action:'The creature performs a surprising friendly dance in front of a group of astonished adults',place:'an outdoor night market with people filming',light:'colorful practical market lights, dramatic but natural shadows',extra:'Make the creature physically plausible within a fantasy scene. The same creature appears in every shot.'},
  palm:{subject:'A detailed, realistic 3D human hand model with neutral, non-identifiable features and clearly rendered palm creases',action:'The camera slowly reveals the traditional heart line and life line as elegant light paths trace across the palm, without claiming to predict medical outcomes or lifespan',place:'a sophisticated mystical studio with dark background and tasteful geometric motifs',light:'soft violet and gold volumetric light, realistic subsurface skin shading',extra:'Respect realistic anatomy: five fingers, accurate knuckles and palm structure. Educational traditional palm-reading aesthetic.'},
@@ -164,6 +169,14 @@ const presets={
 const styleText={realistic:'photorealistic live-action smartphone footage, natural motion and high-detail textures, authentic human reactions', '3d':'polished high-end 3D animated cinematic rendering, rich depth and physically based surfaces',cinema:'cinematic fantasy realism, subtle visual effects, dimensional composition and dramatic depth'};
 const cameraText={handheld:'vertical handheld smartphone camera, slight natural shakiness, candid framing',smooth:'smooth tracking shot with controlled cinematic movement',orbit:'gentle orbiting camera move with consistent scene geometry',close:'close-up storytelling camera with a subtle push-in and realistic focus falloff'};
 const soundText={party:'muffled dance music from speakers, cheers and authentic crowd ambience',comedy:'subtle playful musical cues, cheerful crowd and natural reactions',cinematic:'atmospheric cinematic music and subtle environmental sound',none:'no dialogue, no music, silent video'};
+const comedyBeats=[
+ 'OPENING: medium close-up of the expressive guest speaking a brief original Turkish comic line directly to a friend; natural mouth movements and handheld smartphone framing. The surrounding guests glance over.',
+ 'ESCALATION: the guest raises one hand with a theatrical gesture, grins, and turns toward the gathering. Friends react spontaneously and step aside to make room.',
+ 'DANCE: a continuous full-body shot of the guest performing humorous spontaneous dance steps on the courtyard paving, with authentic weight shifts and expressive hand movements.',
+ 'REACTION: the camera drifts to laughing guests seated on plastic chairs and back to the dancer. Preserve believable clothing movement and night lighting.',
+ 'MUSIC: a traditional drummer appears near the dance area, the beat intensifies, and the dancer responds with a playful turn. Keep it an original gathering.',
+ 'FINALE: the dancer does one fun final move as people clap and laugh; natural conclusion, no branded overlays.'
+];
 const beats=[
  'Establish the location clearly; reveal the main character entering the scene as people turn their heads.',
  'Show the signature action in full-body view. Keep the motion natural, timed and continuous.',
@@ -177,9 +190,11 @@ function status(msg){$('formStatus').textContent=msg;}
 function usePreset(id){
  const p=presets[id]||presets.dog;
  for(const field of ['subject','action','place','light','extra'])$(field).value=p[field];
+ $('dialogue').value=p.dialogue||'';
+ if(id==='courtyard')$('duration').value='18';
  $('visualStyle').value=id==='palm'?'3d':'realistic';
  $('camera').value=id==='palm'?'orbit':'handheld';
- $('sound').value=id==='palm'?'cinematic':'party';
+ $('sound').value=id==='palm'?'cinematic':id==='courtyard'?'comedy':'party';
 }
 $('preset').addEventListener('change',e=>usePreset(e.target.value));
 $('resetDemo').addEventListener('click',()=>{
@@ -239,17 +254,23 @@ function makeSegments(seconds){
  return parts;
 }
 function makePrompt(settings,part,count){
- const beat=beats[(part.index-1)%beats.length];
+ const beat=(settings.preset==='courtyard'?comedyBeats:beats)[(part.index-1)%beats.length];
  return [
   'Generate a SINGLE, ORIGINAL '+part.duration.toFixed(1)+'-second vertical 9:16 AI video shot. Sequence: shot '+part.index+' of '+count+'.',
   'VISUAL STYLE: '+styleText[settings.style]+'.',
   'SUBJECT (exactly the same in every scene): '+settings.subject+'.',
   'CORE ACTION: '+settings.action+'.',
   'THIS SHOT: '+beat,
+  ...(settings.preset==='courtyard'?[
+   'COMEDY STRUCTURE: Original short spoken opening, physical comedy, natural audience reaction, energetic dancing and a quick rhythmic payoff. A believable spontaneous social gathering, not a formal performance.',
+   'SPOKEN TURKISH LINE: '+(part.index===1&&settings.dialogue?settings.dialogue:'No spoken line required in this shot. Natural laughing or cheering is allowed.'),
+   'LIP SYNC: If dialogue is generated, match the mouth movements to the short Turkish words. No copied voice from the reference video.',
+   'SUBTITLES: Do not render text inside the generated shot. Add accurate Turkish subtitles later using Reels Stüdyo editor.'
+  ]:[]),
   'ENVIRONMENT: '+settings.place+'.',
   'LIGHTING: '+settings.light+'.',
   'CAMERA: '+cameraText[settings.camera]+'.',
-  'AUDIO GUIDANCE: '+soundText[settings.sound]+'.',
+  'AUDIO GUIDANCE: '+(settings.preset==='courtyard'?'Turkish courtyard celebration ambience, natural nearby laughter and clapping, energetic authentic live drum rhythm during the dance, and an original Turkish spoken introduction as instructed.':soundText[settings.sound])+'.',
   'CONTINUITY: Use the same design, coat/fur/skin appearance, size, costumes, setting, camera height, proportions and lighting across the entire sequence. Exactly one main subject. The behavior must remain physically coherent.',
   'ADDITIONAL NOTES: '+settings.extra,
   'Do not recreate identifiable bystanders or copyrighted logos from any sample. Make an original scene. No on-screen text or watermark. No disfigured face, body deformation, extra limbs, flickering fur, warped hands or paws, sliding feet, inconsistent character proportions, teleportation, or sudden camera cuts within the shot.'
@@ -261,7 +282,7 @@ function settingsFromForm(){
  if(seconds>3600){status('Bir seferde en fazla 3600 saniyelik sahne planı hazırlanabilir.');return null;}
  const subject=$('subject').value.trim(),action=$('action').value.trim();
  if(subject.length<5||action.length<5){status('Ana karakteri ve hareketini ayrıntılı yaz.');return null;}
- return {seconds,subject,action,place:$('place').value.trim()||'a visually rich authentic location',light:$('light').value.trim()||'cinematic natural lighting',extra:$('extra').value.trim()||'Maintain consistent details',style:$('visualStyle').value,camera:$('camera').value,sound:$('sound').value,preset:$('preset').value,ratio:'9:16'};
+ return {seconds,subject,action,place:$('place').value.trim()||'a visually rich authentic location',light:$('light').value.trim()||'cinematic natural lighting',extra:$('extra').value.trim()||'Maintain consistent details',dialogue:$('dialogue').value.trim().slice(0,350),style:$('visualStyle').value,camera:$('camera').value,sound:$('sound').value,preset:$('preset').value,ratio:'9:16'};
 }
 function readableTime(n){const m=Math.floor(n/60),s=n%60;return String(m).padStart(2,'0')+':'+String(s.toFixed(1)).padStart(4,'0');}
 function renderScenes(){
