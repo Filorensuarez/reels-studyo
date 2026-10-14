@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="Reels Stüdyo: videoları kes, böl, sırala, birleştir; mistik müzik ekle.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg">
+<link rel="stylesheet" href="./editor.css">
+<title>Video Düzenleyici — Reels Stüdyo</title>
+</head>
+<body>
+<header class="top">
+ <a class="back" href="./index.html">← Reels Stüdyo</a>
+ <div class="identity"><span class="mark">R</span><div><h1>Video Düzenleyici</h1><p>Kes · Böl · Birleştir · Müzik ekle</p></div></div>
+</header>
+<main>
+<div class="cols">
+ <section class="left">
+  <div class="panel">
+   <h2>1. Videolarını yükle</h2>
+   <label for="videoFiles" class="file-label">+ Telefona kayıtlı videoları seç</label>
+   <input type="file" id="videoFiles" accept="video/*" multiple>
+   <p class="note">Birden fazla MP4 veya telefonun desteklediği video dosyasını seçebilirsin. Videolar telefonda işlenir, bir sunucuya gönderilmez. 15–60 saniyelik kısa videolar önerilir.</p>
+   <p id="fileStatus" class="status" role="status">Henüz video eklenmedi.</p>
+  </div>
+  <div class="panel">
+   <h2>2. Kes, böl ve sıralamayı düzenle</h2>
+   <p class="note">Her klibin başlangıç ve bitiş saniyesini değiştir. “Böl” düğmesiyle bir klibi iki parçaya ayır. Oklarla parçaların sırasını değiştir.</p>
+   <div id="clipList" class="clip-list"><p class="note">Yukarıdan video eklediğinde düzenleme araçları burada görünecek.</p></div>
+   <div class="duration" id="durationLabel">Birleştirilmiş süre: 00:00</div>
+  </div>
+  <div class="panel">
+   <h2>3. El analizine uygun müziği seç</h2>
+   <label for="editorMusic">Hazır enstrümantal müzikler</label>
+   <select id="editorMusic">
+    <option value="elokuma" selected>El Okuma Atmosferi</option>
+    <option value="mistik">Mistik Piyano</option>
+    <option value="meditasyon">Derin Meditasyon</option>
+    <option value="kadim">Kadim Ezgi</option>
+    <option value="gizem">Gizemli İzler</option>
+    <option value="huzur">Huzurlu Esinti</option>
+    <option value="odak">Sessiz Odak</option>
+    <option value="tanitim">Yumuşak Tanıtım</option>
+    <option value="none">Müzik yok</option>
+   </select>
+   <div class="row" style="margin-top:12px"><button type="button" id="sampleMusic" class="secondary">♪ Müziği dinle</button><div class="grow"><label for="musicGain">Müzik seviyesi: <span id="musicGainValue">%25</span></label><input type="range" id="musicGain" min="0" max="100" value="25"></div></div>
+   <label class="check"><input type="checkbox" id="keepAudio" checked> Videoların orijinal seslerini koru</label>
+   <p class="note">Hazır müzikler özgün ve uygulamanın içindedir. Orijinal konuşma sesini koruyup müziği arka planda kısabilirsin.</p>
+  </div>
+  <div class="panel">
+   <h2>4. Reels çıkış ayarları</h2>
+   <div class="settings">
+    <div><label for="outputSize">Çözünürlük</label><select id="outputSize"><option value="540">540 × 960 (hızlı)</option><option value="720" selected>720 × 1280 (önerilen)</option><option value="1080">1080 × 1920 (yüksek)</option></select></div>
+    <div><label for="outputFps">Kare hızı</label><select id="outputFps"><option value="24" selected>24 FPS</option><option value="30">30 FPS</option></select></div>
+   </div>
+   <label class="check"><input type="checkbox" id="contain"> Görüntüyü kesmeden sığdır (siyah boşluk olabilir)</label>
+   <label for="captionText">Video üzerine kısa başlık (isteğe bağlı)</label>
+   <input id="captionText" type="text" maxlength="100" placeholder="Örnek: Yaşam çizgisinin geleneksel yorumu">
+   <p class="note">Dikey 9:16 biçiminde çıktı alınır. Yatay videolar varsayılan olarak dikey alanı dolduracak şekilde kırpılır.</p>
+  </div>
+ </section>
+ <aside class="right">
+  <div class="panel preview">
+   <h2>Canlı video ön izlemesi</h2>
+   <div class="phone"><canvas id="editCanvas" width="540" height="960"></canvas></div>
+   <div class="times"><span id="playLabel">00:00</span><span id="totalLabel">00:00</span></div>
+   <input type="range" id="seekBar" min="0" max="1000" value="0" aria-label="Video zaman çizelgesi">
+   <div class="controls"><button id="previewPlay" class="secondary">▶ Ön izlemeyi oynat</button><button id="previewStop" class="outline">■ Durdur</button></div>
+   <button id="makeVideo" class="primary" disabled>Birleştir ve Reels oluştur (MP4)</button>
+   <button id="cancelVideo" class="outline" hidden>İşlemi iptal et</button>
+   <p id="editorStatus" class="status" role="status" aria-live="polite">Videoları yükleyerek başlayabilirsin.</p>
+   <div id="editorDownload"></div>
+   <p class="note">İşlem sırasında ekranı açık tut. İlk MP4 dönüştürmesi gerekiyorsa internet bağlantısı ve ek telefon belleği kullanılabilir. Tarayıcı desteklemiyorsa WebM alternatif olarak sunulur.</p>
+  </div>
+ </aside>
+</div>
+</main>
+<video id="player" playsinline preload="auto" class="decode" aria-hidden="true"></video>
+<script src="./music-library.js"></script>
+<script src="./editor.js"></script>
+<script>
+if('serviceWorker' in navigator) window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
+</script>
+</body>
+</html>
