@@ -6,6 +6,8 @@ import asyncio
 import os
 import shutil
 import tempfile
+import secrets
+from fastapi import Header
 from pathlib import Path
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
@@ -38,7 +40,11 @@ async def face_swap(
     video: UploadFile = File(...),
     photo: UploadFile = File(...),
     preserve_audio: bool = Form(True),
+    authorization: str | None = Header(default=None),
 ):
+    required_token = os.getenv("FACE_SWAP_API_TOKEN", "").strip()
+    if not required_token or not authorization or not secrets.compare_digest(authorization, "Bearer " + required_token):
+        raise HTTPException(401, "Yetkili API erişimi gerekli.")
     exe = os.getenv("FACEFUSION_EXECUTABLE", "").strip()
     if not exe or not Path(exe).is_file():
         raise HTTPException(503, "FaceFusion modeli sunucuda kurulu değil.")
@@ -48,12 +54,12 @@ async def face_swap(
         raise HTTPException(415, "Yüz fotoğrafı gerekli.")
     directory = Path(tempfile.mkdtemp(prefix="reels-faceswap-"))
     try:
-        source = directory / "source.jpg"
+        source = directory / ("source.png" if photo.content_type == "image/png" else "source.jpg")
         target = directory / "target.mp4"
         output = directory / "output.mp4"
         await save_upload(photo, source, MAX_PHOTO)
         await save_upload(video, target, MAX_VIDEO)
-        # FaceFusion command line runner. Requires FaceFusion and its models installed on GPU worker.
+        # FaceFusion headless CLI; GPU model installation and runtime verification required.
         command = [exe, "headless-run", "--source-paths", str(source),
                    "--target-path", str(target), "--output-path", str(output),
                    "--processors", "face_swapper",
