@@ -4,14 +4,14 @@
 const SR=22050;
 const MODE_MAJOR=[0,2,4,5,7,9,11],MODE_MINOR=[0,2,3,5,7,8,10];
 const styles={
- masal:{name:'Masal Bahçesi',bpm:92,key:60,melody:[0,2,4,2,4,5,4,2,0,2,4,7,5,4,2,0],inst:'bell',pad:.17,bass:.17,beat:0,minor:false,progression:[0,4,5,3]},
- cocuk:{name:'Neşeli Oyun',bpm:122,key:62,melody:[0,2,4,7,5,4,2,4,7,7,5,4,2,4,2,0],inst:'marimba',pad:.12,bass:.20,beat:1,minor:false,progression:[0,3,4,0]},
- piyano:{name:'Sakin Piyano',bpm:80,key:60,melody:[0,2,4,2,0,-1,2,4,5,4,2,0,-1,2,0,-1],inst:'piano',pad:.17,bass:.14,beat:0,minor:false,progression:[0,5,3,4]},
- motivasyon:{name:'Yeni Başlangıç',bpm:110,key:62,melody:[0,2,4,7,4,5,7,9,7,5,4,2,4,7,9,7],inst:'piano',pad:.23,bass:.23,beat:1,minor:false,progression:[0,4,5,3]},
- vlog:{name:'Modern Vlog',bpm:116,key:60,melody:[0,-1,4,2,7,4,2,-1,0,2,4,-1,7,5,4,2],inst:'pluck',pad:.12,bass:.27,beat:2,minor:false,progression:[0,5,3,4]},
- sinema:{name:'Sinematik Yolculuk',bpm:84,key:57,melody:[0,-1,2,4,5,-1,4,2,0,2,4,7,5,4,2,0],inst:'soft',pad:.32,bass:.27,beat:0,minor:true,progression:[0,5,3,6]},
+ elokuma:{name:'El Okuma Atmosferi',bpm:78,key:57,melody:[0,-1,2,4,5,-1,4,2,0,2,4,7,5,-1,2,0],inst:'soft',pad:.34,bass:.12,beat:0,minor:true,progression:[0,5,3,6]},
+ mistik:{name:'Mistik Piyano',bpm:72,key:60,melody:[0,2,4,-1,5,4,2,0,0,4,5,7,5,4,2,0],inst:'piano',pad:.23,bass:.13,beat:0,minor:true,progression:[0,3,5,4]},
+ meditasyon:{name:'Derin Meditasyon',bpm:65,key:57,melody:[0,-1,-1,4,5,-1,4,-1,0,-1,2,4,5,-1,-1,0],inst:'bell',pad:.38,bass:.10,beat:0,minor:true,progression:[0,5,3,6]},
+ kadim:{name:'Kadim Ezgi',bpm:84,key:62,melody:[0,2,3,5,7,5,3,2,0,-1,3,5,7,5,3,0],inst:'marimba',pad:.22,bass:.15,beat:0,minor:true,progression:[0,6,5,4]},
+ gizem:{name:'Gizemli İzler',bpm:82,key:59,melody:[0,-1,4,2,5,7,-1,4,0,2,5,4,7,5,4,2],inst:'pluck',pad:.30,bass:.19,beat:0,minor:true,progression:[0,5,3,6]},
  huzur:{name:'Huzurlu Esinti',bpm:76,key:65,melody:[0,4,2,-1,5,4,2,0,2,4,5,4,2,-1,0,-1],inst:'bell',pad:.24,bass:.11,beat:0,minor:false,progression:[0,3,5,4]},
- tanitim:{name:'Enerjik Tanıtım',bpm:128,key:60,melody:[0,0,4,7,5,4,2,7,0,2,4,7,9,7,5,4],inst:'pluck',pad:.10,bass:.32,beat:2,minor:false,progression:[0,4,5,3]}
+ odak:{name:'Sessiz Odak',bpm:68,key:60,melody:[0,2,4,-1,0,2,-1,4,5,4,-1,2,0,-1,2,-1],inst:'soft',pad:.36,bass:.10,beat:0,minor:false,progression:[0,3,5,4]},
+ tanitim:{name:'Yumuşak Tanıtım',bpm:96,key:60,melody:[0,2,4,7,5,4,2,4,7,7,5,4,2,4,2,0],inst:'piano',pad:.17,bass:.18,beat:0,minor:false,progression:[0,5,3,4]}
 };
 const pcmCache=new Map();
 const TAU=Math.PI*2;
