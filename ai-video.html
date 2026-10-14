@@ -233,8 +233,8 @@ $('downloadFrame').addEventListener('click',()=>{if(frameURL)downloadURL(frameUR
 function makeSegments(seconds){
  const count=Math.max(2,Math.ceil(seconds/8)),span=seconds/count,parts=[];
  for(let i=0;i<count;i++){
-  const start=i*span,end=(i+1)*span;
-  parts.push({index:i+1,start:+start.toFixed(2),end:+end.toFixed(2),duration:+(end-start).toFixed(2)});
+  const start=+(i*span).toFixed(2),end=+((i+1)*span).toFixed(2);
+  parts.push({index:i+1,start,end,duration:+(end-start).toFixed(2)});
  }
  return parts;
 }
