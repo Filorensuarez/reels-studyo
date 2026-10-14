@@ -72,14 +72,14 @@ function riffPcm16(float,rate){
 function getEncodedWav(){
  if(!currentAudio)return null;const p=chosen();
  // Sesin hızı ve tonu örnekleme frekansıyla birlikte değiştirilir.
- return riffPcm16(currentAudio.samples,Math.max(1000,Math.round(currentAudio.rate*p.aiRate)));
+ return riffPcm16(currentAudio.samples,currentAudio.origin==='uploaded'?currentAudio.rate:Math.max(1000,Math.round(currentAudio.rate*p.aiRate)));
 }
 function hasAudio(){return Boolean(currentAudio?.samples?.length);}
 function getAudioBuffer(context){
  if(!hasAudio())return null;
  const b=context.createBuffer(1,currentAudio.samples.length,currentAudio.rate);
  b.copyToChannel(currentAudio.samples,0);
- return {buffer:b,playbackRate:chosen().aiRate};
+ return {buffer:b,playbackRate:currentAudio.origin==='uploaded'?1:chosen().aiRate};
 }
 function resetWave(){
  if(lastWavURL)URL.revokeObjectURL(lastWavURL);lastWavURL=null;
@@ -110,7 +110,7 @@ async function generate(){
   const len=wave.reduce((s,x)=>s+x.length,0);
   if(len>samplerate*150)throw Error('Çıktı çok uzun. Daha kısa metin dene.');
   const samples=new Float32Array(len);let at=0;for(const x of wave){samples.set(x,at);at+=x.length;}
-  currentAudio={samples,rate:samplerate};
+  currentAudio={samples,rate:samplerate,origin:'ai'};
   displayWave();
   refreshStatus('AI ses dosyası oluşturuldu. Dinle, WAV olarak indir veya video dışa aktarımına ekle. Bu model yalnızca ticari olmayan kullanım içindir.');
  }catch(e){refreshStatus('Seslendirme üretilemedi: '+(e?.message||String(e))+'. Telefonunda büyük modeli çalıştırmak mümkün olmayabilir.',true);}
@@ -127,7 +127,7 @@ $('importNarrator').addEventListener('change',async()=>{
   const channels=buffer.numberOfChannels,samples=new Float32Array(buffer.length);
   for(let ch=0;ch<channels;ch++){const data=buffer.getChannelData(ch);for(let i=0;i<samples.length;i++)samples[i]+=data[i]/channels;}
   if(samples.length>buffer.sampleRate*180)throw Error('Ses en fazla üç dakika olabilir.');
-  currentAudio={samples,rate:buffer.sampleRate};displayWave();
+  currentAudio={samples,rate:buffer.sampleRate,origin:'uploaded'};displayWave();
   refreshStatus('Ses dosyası eklendi: '+file.name+'. Videoya karıştırılacak. Kullanım hakkını kontrol et.');
  }catch(e){refreshStatus('Dosya açılamadı: '+e.message,true);}
  finally{try{await ctx?.close()}catch(e){}}
