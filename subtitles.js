@@ -168,7 +168,7 @@ function normalizedResult(output,offset,length){
  if(!found.length&&output?.text)found=splitText(output.text,offset,offset+length);
  return found;
 }
-function feedback(text){status(text);S('autoSubtitles').textContent='Türkçe altyazı hazırlanıyor…';}
+function feedback(text){status(text);}
 async function autoGenerate(){
  if(autoRunning){stopRequested=true;status('İşlem durdurulacak; devam eden model hesaplamasının bitmesi gerekebilir.');return;}
  if(api.isBusy()){status('Önce videoyu duraklat.','error');return;}
