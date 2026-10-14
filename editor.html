@@ -90,6 +90,24 @@
  <div id="bestStatus" class="status" role="status" aria-live="polite"></div>
  <div id="bestResults"></div>
 </div>
+   <div class="subtitlePanel" id="subtitlePanel">
+     <h3>Konuşmalara altyazı ekle</h3>
+     <p class="note">Türkçe konuşmaları otomatik yazıya dökmeyi dene veya istediğin saniyeye kendin altyazı ekle. Altyazılar videoya işlenir.</p>
+     <button type="button" id="autoSubtitles" class="secondary full">Türkçe altyazıyı otomatik oluştur (deneysel)</button>
+     <p class="note">İlk kullanımda ücretsiz konuşma tanıma modeli internetten indirilir; telefonunda yüksek bellek kullanabilir. Ses dosyası sunucuya yüklenmeden cihazında çözümlenmeye çalışılır. Otomatik sonuçları mutlaka düzelt.</p>
+     <div class="subtitleActions">
+       <button type="button" id="subtitleAdd" class="secondary">+ Bulunduğum ana altyazı</button>
+       <button type="button" id="subtitleImport" class="outline">SRT yükle</button>
+       <button type="button" id="subtitleExport" class="outline">SRT indir</button>
+     </div>
+     <input type="file" id="subtitleFile" accept=".srt,text/plain" hidden>
+     <div class="subtitleOptions">
+       <label for="subtitleColor">Altyazı rengi</label>
+       <select id="subtitleColor"><option value="white">Beyaz</option><option value="yellow">Sarı</option></select>
+     </div>
+     <p id="subtitleStatus" class="status" role="status" aria-live="polite">Altyazı eklemek için video yükle.</p>
+     <div id="subtitleEntries" class="subtitleEntries"></div>
+   </div>
    <button id="makeVideo" class="primary" disabled>Birleştir ve Reels oluştur (MP4)</button>
    <button id="cancelVideo" class="outline" hidden>İşlemi iptal et</button>
    <p id="editorStatus" class="status" role="status" aria-live="polite">Videoları yükleyerek başlayabilirsin.</p>
@@ -103,6 +121,7 @@
 <script src="./music-library.js"></script>
 <script src="./editor.js"></script>
 <script src="./quick-editor.js"></script>
+<script src="./subtitles.js"></script>
 <script>
 if('serviceWorker' in navigator) window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
 </script>
