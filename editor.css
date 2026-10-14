@@ -47,3 +47,13 @@
 .subtitleItem textarea:focus{border-color:#a8ffbf;outline:none}
 .subtitleItem input[type=number]{font-variant-numeric:tabular-nums;font-size:14px;padding:9px 7px}
 @media(max-width:400px){.subtitlePanel{padding:10px}.subtitleTimeGrid{gap:6px}.subtitleItemActions button{padding:7px 5px;font-size:10px}}
+
+/* Türkçe AI seslendirme */
+#ttsPanel textarea{display:block;width:100%;box-sizing:border-box;background:#101b2f;color:#fff;border:1px solid #536078;border-radius:11px;min-height:120px;padding:11px;font-family:inherit;line-height:1.5;font-size:15px;resize:vertical}
+#ttsPanel select{width:100%}
+#ttsPanel .row button{flex:1;min-width:130px}
+#ttsPanel .advanced{margin-top:14px;padding:11px;border:1px solid #48647d;border-radius:12px;background:#1a2a42}
+#ttsPanel .advanced>summary{cursor:pointer;font-weight:700;color:#b8f5d0;background:#193e34}
+#ttsPanel audio{margin:12px 0}
+#ttsPanel .voiceDownload{display:block;margin:10px 0;padding:11px;background:#a8ffbf;color:#09251a;text-align:center;font-weight:700;border-radius:9px;text-decoration:none}
+#ttsPanel [hidden]{display:none!important}
