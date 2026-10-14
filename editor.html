@@ -26,9 +26,9 @@
    <p id="fileStatus" class="status" role="status">Henüz video eklenmedi.</p>
   </div>
   <div class="panel">
-   <h2>2. Kes, böl ve sıralamayı düzenle</h2>
-   <p class="note">Her klibin başlangıç ve bitiş saniyesini değiştir. “Böl” düğmesiyle bir klibi iki parçaya ayır. Oklarla parçaların sırasını değiştir.</p>
-   <div id="clipList" class="clip-list"><p class="note">Yukarıdan video eklediğinde düzenleme araçları burada görünecek.</p></div>
+   <h2>2. Düzenlenen parçalar</h2>
+   <p class="note">Parçaları ön izlemenin altındaki büyük düğmelerle kesip birleştirebilirsin. Buradan ayrıca sıralama yapabilir, istediğin parçayı görüntüleyebilirsin.</p>
+   <details class="advanced"><summary>Parçaları ve ayrıntılı süreleri göster</summary><div id="clipList" class="clip-list"><p class="note">Yukarıdan video eklediğinde düzenleme araçları burada görünecek.</p></div></details>
    <div class="duration" id="durationLabel">Birleştirilmiş süre: 00:00</div>
   </div>
   <div class="panel">
@@ -63,11 +63,33 @@
  </section>
  <aside class="right">
   <div class="panel preview">
-   <h2>Canlı video ön izlemesi</h2>
+   <h2>Videoyu İzle ve Düzenle</h2>
+<p class="note" style="margin-top:0">Oynat, istediğin saniyede duraklat, ardından tek düğmeyle kes veya başka video ekle.</p>
+<label for="videoFiles" class="file-label compactFile">+ İlk videolarını yükle</label>
    <div class="phone"><canvas id="editCanvas" width="540" height="960"></canvas></div>
    <div class="times"><span id="playLabel">00:00</span><span id="totalLabel">00:00</span></div>
    <input type="range" id="seekBar" min="0" max="1000" value="0" aria-label="Video zaman çizelgesi">
-   <div class="controls"><button id="previewPlay" class="secondary">▶ Ön izlemeyi oynat</button><button id="previewStop" class="outline">■ Durdur</button></div>
+   <div class="controls"><button id="previewPlay" class="secondary">▶ Videoyu oynat</button><button id="previewStop" class="outline">Ⅱ Burada duraklat</button></div>
+<div class="quickEdit">
+ <p class="editHint">Videoyu durdurduğun saniyede aşağıdaki işlemleri yap.</p>
+ <p class="atLabel" id="atLabel">Seçili an: 00:00</p>
+ <div class="quickGrid">
+   <button type="button" id="quickSplit">Makas: Burada böl</button>
+   <button type="button" id="quickInsert">+ Buraya video ekle</button>
+   <button type="button" id="quickTrimStart">Başını buradan başlat</button>
+   <button type="button" id="quickTrimEnd">Sonunu burada bitir</button>
+   <button type="button" id="quickDelete" class="outline danger">Bu parçayı çıkar</button>
+   <button type="button" id="quickUndo" class="outline">Geri al</button>
+ </div>
+ <input type="file" id="quickInsertFiles" accept="video/*" multiple hidden>
+</div>
+<div class="bestMoments">
+ <h3>En dikkat çekici anları bul</h3>
+ <p class="note">Görüntü hareketi ve sahne değişimlerini tarar. Konuşmanın anlamını veya el çizgilerinin önemini anlayamaz; önerileri kendin izle.</p>
+ <button type="button" id="findBest" class="secondary">Videodaki öne çıkan 10 saniyeleri bul</button>
+ <div id="bestStatus" class="status" role="status" aria-live="polite"></div>
+ <div id="bestResults"></div>
+</div>
    <button id="makeVideo" class="primary" disabled>Birleştir ve Reels oluştur (MP4)</button>
    <button id="cancelVideo" class="outline" hidden>İşlemi iptal et</button>
    <p id="editorStatus" class="status" role="status" aria-live="polite">Videoları yükleyerek başlayabilirsin.</p>
@@ -80,6 +102,7 @@
 <video id="player" playsinline preload="auto" class="decode" aria-hidden="true"></video>
 <script src="./music-library.js"></script>
 <script src="./editor.js"></script>
+<script src="./quick-editor.js"></script>
 <script>
 if('serviceWorker' in navigator) window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
 </script>
