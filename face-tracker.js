@@ -1,6 +1,6 @@
 // MediaPipe Face Landmarker: on-device face landmarks for supported mobile browsers.
 // This module does not swap identities or synthesize expressions.
-const VERSION='0.10.22-rc.20250304';
+const VERSION='0.10.22';
 const BASE='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@'+VERSION;
 const MODEL='https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
 export async function createTracker(){
