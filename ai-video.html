@@ -113,10 +113,10 @@ footer{font-size:12px;color:var(--muted);padding-bottom:30px}
  <p class="note">Konuşmanın dudak hareketiyle uyumu, kullandığın AI video hizmetine bağlıdır. Türkçe altyazıları daha sonra Reels düzenleyicisinde ekleyebilirsin.</p>
  <details><summary style="cursor:pointer;font-weight:700;padding:12px;background:#253c56;border-radius:9px">Ek ayarlar (isteğe bağlı)</summary><label for="extra">Özel ayrıntılar</label>
  <textarea id="extra" rows="2" placeholder="Örnek: İnsanlar şaşırsın, bir kişi cep telefonuyla çekim yapsın."></textarea>
- <div class="buttons">
-  <button id="makeScenes" type="button" class="primary">Video planını oluştur</button>
-  <button id="resetDemo" type="button" class="outline">Örnek köpek sahnesini yükle</button>
- </div>
+ <div class="buttons"><button id="resetDemo" type="button" class="outline">Örnek köpek sahnesini yükle</button></div>
+ </details>
+ <div class="buttons"><button id="makeScenes" type="button" class="primary" style="width:100%;font-size:18px;padding:17px">Video planını oluştur →</button></div>
+ <p class="note">Bu düğme video üretim komutlarını hazırlar; MP4 üretmez. Gerçek video için harici AI hizmeti gerekir.</p>
  <div id="formStatus" class="status" role="status" aria-live="polite"></div>
 </section>
 <section id="results" class="panel" hidden>
