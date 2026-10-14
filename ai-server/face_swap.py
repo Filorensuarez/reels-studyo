@@ -32,7 +32,7 @@ async def save_upload(upload: UploadFile, path: Path, limit: int):
 @router.get("/api/face-swap/status")
 def status():
     exe = os.getenv("FACEFUSION_EXECUTABLE", "").strip()
-    return {"ready": bool(exe and Path(exe).is_file()), "engine": "FaceFusion",
+    return {"ready": bool(exe and Path(exe).is_file() and os.getenv("FACE_SWAP_API_TOKEN")), "engine": "FaceFusion",
             "message": "Gerçek model hazır" if exe and Path(exe).is_file() else "AI modeli kurulmadı"}
 
 @router.post("/api/face-swap")
@@ -60,7 +60,7 @@ async def face_swap(
         await save_upload(photo, source, MAX_PHOTO)
         await save_upload(video, target, MAX_VIDEO)
         # FaceFusion headless CLI; GPU model installation and runtime verification required.
-        command = [exe, "headless-run", "--source-paths", str(source),
+        command = [os.getenv("FACEFUSION_PYTHON", "python"), exe, "headless-run", "--source-paths", str(source),
                    "--target-path", str(target), "--output-path", str(output),
                    "--processors", "face_swapper",
                    "--output-video-encoder", "libx264"]
