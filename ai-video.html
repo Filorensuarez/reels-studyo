@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1729">
+<meta name="description" content="Gerçekçi AI Reels için referans kare, sahne planı, metinden video komutları ve video montaj akışı.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg">
+<title>Gerçekçi AI Video Atölyesi — Reels Stüdyo</title>
+<style>
+:root{color-scheme:dark;--bg:#0a1020;--panel:#162238;--edge:#33445f;--text:#f2f6fc;--muted:#b5c3d7;--green:#abffc6;--blue:#8bd4ff}
+*{box-sizing:border-box}body{margin:0;color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55;background:radial-gradient(ellipse at top left,#253853,transparent 48%),var(--bg)}
+header,main,footer{max-width:1100px;margin:auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+nav{display:flex;gap:8px;flex-wrap:wrap}a{color:#a8ddff}nav a{font-size:13px;border:1px solid var(--edge);padding:8px 12px;border-radius:10px;text-decoration:none}
+.hero{background:linear-gradient(115deg,#26404c,#1a203d 60%,#34283f);border:1px solid #536778;border-radius:20px;padding:20px;margin:4px 0 18px}
+h1{font-size:27px;margin:0 0 4px}h2{font-size:19px;margin:0 0 12px}h3{font-size:16px;margin:0 0 8px}
+.hero p{max-width:740px;margin:7px 0;color:#d5e2ee} .pill{display:inline-flex;background:#243d35;border:1px solid #527c6e;padding:4px 10px;font-size:12px;color:var(--green);border-radius:22px;margin-bottom:9px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:17px;align-items:start}
+section.panel,aside.panel{background:var(--panel);border:1px solid var(--edge);padding:18px;border-radius:16px;margin-bottom:15px}
+label{font-size:13px;color:#dce5f3;display:block;margin:12px 0 5px}input,select,textarea{font-family:inherit;color:var(--text);font-size:15px;background:#0c172b;border:1px solid #52617d;border-radius:9px;padding:10px 11px;width:100%}
+textarea{resize:vertical;min-height:75px;line-height:1.55}
+input[type=file]{font-size:13px}button{font-family:inherit;cursor:pointer;color:var(--text);font-weight:700;font-size:14px;background:#294462;border:1px solid #607994;border-radius:11px;padding:11px 13px}
+button:disabled{opacity:.5;cursor:default}.primary{color:#0e2b1c;background:var(--green);border:0}.outline{background:transparent}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #a7d9ff;outline-offset:2px}
+p.note,small{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.buttons>*{flex:1}
+#refVideo{display:block;background:black;max-height:280px;width:auto;max-width:100%;margin:10px auto;border-radius:12px}
+#referencePreview[hidden],#stillImage[hidden],#results[hidden],#lastFrame[hidden]{display:none}
+#stillImage{display:block;max-height:250px;max-width:100%;margin:12px auto;border-radius:9px}
+.status{color:#c9f8d7;font-size:13px;min-height:20px;margin:8px 0}
+.aspect{display:flex;gap:12px;justify-content:space-between}
+.asideGuide{background:#101d31;border:1px solid #3b516b;border-radius:13px;padding:12px}
+.asideGuide ol{padding-left:19px;margin:5px 0;font-size:13px;color:#deebfa}.asideGuide li{margin:8px 0}
+.steps{display:grid;gap:9px;margin-top:10px}.step{display:flex;gap:10px;align-items:center;background:#23344a;border-radius:10px;padding:9px}.num{flex:none;background:#a7ffc6;color:#0c2b1f;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;font-weight:800;font-size:12px}
+.info{background:#172f32;border-left:4px solid var(--green);padding:11px 13px;font-size:13px;border-radius:5px;margin:14px 0}
+.warn{border-left:4px solid #d5bd72;background:#282839}
+#results{margin-top:14px}.scene{border:1px solid #52647b;border-radius:14px;background:#1b2c45;padding:13px;margin:12px 0}
+.scenehead{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.scenehead strong{font-size:15px}.scenehead span{font-size:12px;color:#b9dcca}
+.scene textarea{font-size:13px;min-height:180px;white-space:pre-wrap}.scene .buttons button{font-size:12px}
+.summary{background:#173a38;padding:12px;border-radius:10px;border:1px solid #458473;margin:12px 0;font-size:13px}
+.providers{display:grid;gap:8px}.provider{padding:12px;border:1px solid #476078;border-radius:11px;background:#1b2e46;text-decoration:none;display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:700}.provider small{display:block;font-weight:400}
+.previewCard{height:180px;position:relative;overflow:hidden;background:radial-gradient(circle at 35% 35%,#df5e4d9c,transparent 45%),linear-gradient(135deg,#340b19,#0c1b31 65%,#382632);border-radius:14px;display:grid;place-items:center;border:1px solid #4f5062}
+.previewCard span{font-size:68px;filter:drop-shadow(0 10px 4px #0005);transform:rotate(-5deg)}.previewCard:after{content:"9:16 · AI video sahne taslağı";position:absolute;bottom:10px;font-size:11px;color:#f3e5d7}
+.download{display:inline-block;text-decoration:none;font-weight:700;color:#0d281a;background:var(--green);padding:11px 13px;border-radius:10px;margin-top:8px}
+footer{font-size:12px;color:var(--muted);padding-bottom:30px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}header,main,footer{padding:12px}.hero{padding:16px}h1{font-size:23px}section.panel,aside.panel{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+ <a href="./index.html" style="text-decoration:none;font-weight:750">← Reels Stüdyo</a>
+ <nav><a href="./editor.html">✂ Video düzenleyici</a><a href="./index.html">Ana sayfa</a></nav>
+</header>
+<main>
+<div class="hero">
+ <span class="pill">Yeni · Gerçekçi AI Video Atölyesi</span>
+ <h1>Referans videodaki tarzda yeni sahneler hazırla</h1>
+ <p>Örnek: Kalabalık bir eğlence mekânında dans eden insan boyunda, fotogerçekçi beyaz bir köpek. Sahneni yaz, 9:16 video komutlarını üret, AI video aracıyla klipleri oluştur ve Reels Stüdyo'da birleştir.</p>
+ <p class="note">Bu sayfa gerçekçi yapay zekâ videosunu tek başına oluşturmaz. Görüntü üretimi için Google Flow, Kling veya Runway gibi harici bir hizmet kullanılır; bu hizmetlerin üyelik, kredi ve kullanım sınırları olabilir.</p>
+</div>
+<div class="layout">
+<div>
+<section class="panel">
+ <h2>1. Referans video veya fotoğraf ekle</h2>
+ <label for="referenceFile">Videonu ya da görselini seç</label>
+ <input id="referenceFile" type="file" accept="video/*,image/*">
+ <p class="note">Dosya bu sayfada, telefonunda açılır; Reels Stüdyo sunucusuna gönderilmez. Video içinden sahne örneği seçip PNG kare indirebilirsin.</p>
+ <div id="referencePreview" hidden>
+  <video id="refVideo" controls playsinline preload="metadata"></video>
+  <img id="stillImage" alt="Seçilen referans kare" hidden>
+  <div class="buttons">
+   <button id="captureFrame" type="button">Bu saniyedeki kareyi seç</button>
+   <button id="downloadFrame" class="outline" type="button" disabled>PNG kareyi indir</button>
+  </div>
+  <p id="fileInfo" class="status"></p>
+ </div>
+</section>
+<section class="panel">
+ <h2>2. Üretmek istediğin sahneyi tarif et</h2>
+ <label for="preset">Hazır video türü</label>
+ <select id="preset">
+  <option value="dog">Örnekteki gibi: Dev beyaz köpek dans ediyor</option>
+  <option value="cat">Gerçekçi konuşan veya dans eden kedi</option>
+  <option value="animal">İnsanlarla etkileşen fantastik hayvan</option>
+  <option value="palm">Spiritüel el analizi · 3D sinematik</option>
+  <option value="custom">Kendi sahnemi oluştur</option>
+ </select>
+ <label for="subject">Ana karakter veya nesne</label><textarea id="subject" rows="2"></textarea>
+ <label for="action">Videoda ne yapsın?</label><textarea id="action" rows="2"></textarea>
+ <div class="grid">
+  <div><label for="place">Mekân</label><input id="place"></div>
+  <div><label for="light">Işık ve atmosfer</label><input id="light"></div>
+ </div>
+ <div class="grid">
+  <div><label for="visualStyle">Görsel stil</label>
+   <select id="visualStyle"><option value="realistic">Fotogerçekçi · gerçek kamera hissi</option><option value="3d">Üç boyutlu sinema animasyonu</option><option value="cinema">Sinematik fantastik gerçekçilik</option></select>
+  </div>
+  <div><label for="camera">Kamera hareketi</label>
+   <select id="camera"><option value="handheld">Elde çekim · doğal sarsıntı</option><option value="smooth">Yumuşak sinematik takip</option><option value="orbit">3D çevresinde dönme hareketi</option><option value="close">Yakın plan ve yavaş yaklaşma</option></select>
+  </div>
+ </div>
+ <div class="grid">
+  <div><label for="duration">Toplam video süresi (en az 10 saniye)</label><input id="duration" type="number" min="10" value="16" step="1" inputmode="numeric"></div>
+  <div><label for="sound">Ses ortamı</label>
+   <select id="sound"><option value="party">Parti müziği + ortam sesleri</option><option value="comedy">Komik efektler + ortam sesleri</option><option value="cinematic">Sinematik atmosfer</option><option value="none">Sessiz / sonra müzik ekle</option></select>
+  </div>
+ </div>
+ <label for="extra">Özel ayrıntılar (isteğe bağlı)</label>
+ <textarea id="extra" rows="2" placeholder="Örnek: İnsanlar şaşırsın, bir kişi cep telefonuyla çekim yapsın."></textarea>
+ <div class="buttons">
+  <button id="makeScenes" type="button" class="primary">AI video sahnelerini hazırla</button>
+  <button id="resetDemo" type="button" class="outline">Örnek köpek sahnesini yükle</button>
+ </div>
+ <div id="formStatus" class="status" role="status" aria-live="polite"></div>
+</section>
+<section id="results" class="panel" hidden>
+ <h2>3. Üretime hazır sahneler</h2>
+ <p class="note">Her klip ayrı üretilecek şekilde tasarlandı. Sahne başlıkları ve video komutları özgündür; referans videodaki gerçek kişilerin yüzleri kopyalanmaz.</p>
+ <div class="summary" id="summary"></div>
+ <div class="buttons">
+  <button id="copyAll" class="primary" type="button">Tüm komutları kopyala</button>
+  <button id="exportTxt" class="outline" type="button">Komutları TXT indir</button>
+  <button id="exportJson" class="outline" type="button">Sahne planını indir</button>
+ </div>
+ <div id="sceneList"></div>
+</section>
+</div>
+<aside class="panel">
+ <h2>Nasıl video üreteceksin?</h2>
+ <div class="previewCard"><span aria-hidden="true">🐕</span></div>
+ <div class="steps">
+  <div class="step"><div class="num">1</div><span>Örnek video yükle ve istediğin kareyi seç.</span></div>
+  <div class="step"><div class="num">2</div><span>Karakteri, hareketi ve süreyi yaz.</span></div>
+  <div class="step"><div class="num">3</div><span>Her sahne için hazırlanmış İngilizce AI komutunu kopyala.</span></div>
+  <div class="step"><div class="num">4</div><span>Bir video üreticisinde 9:16 klipleri oluştur. İstersen referans kareyi de yükle.</span></div>
+  <div class="step"><div class="num">5</div><span>MP4 dosyalarını indir, Reels düzenleyicisinde birleştir.</span></div>
+ </div>
+ <div class="info">10 saniye veya daha uzun bir video, kısa AI klipleri birleştirerek hazırlanır. Video üreticileri genellikle tek seferde sınırlı uzunlukta klip oluşturur.</div>
+ <h3>AI video üreticisine geç</h3>
+ <div class="providers">
+  <a class="provider" href="https://kling.ai/" target="_blank" rel="noopener noreferrer"><span>Kling AI<small>Metinden videoya · görselden videoya</small></span><span>↗</span></a>
+  <a class="provider" href="https://app.runwayml.com/video-tools/ai-tools/generate?mode=tools&amp;tool=video" target="_blank" rel="noopener noreferrer"><span>Runway<small>Gerçekçi video, referans, sahne</small></span><span>↗</span></a>
+  <a class="provider" href="https://labs.google/fx/tools/flow" target="_blank" rel="noopener noreferrer"><span>Google Flow<small>Veo ile video üretimi</small></span><span>↗</span></a>
+ </div>
+ <p class="note">Üçüncü tarafların ücretleri, kullanım hakları ve desteklenen uzunlukları değişebilir. Telefonundaki fotoğraflar yalnızca sen yüklediğinde bu servislere aktarılır.</p>
+ <h3>Ürettiğin klipleri birleştir</h3>
+ <a class="download" href="./editor.html">Video düzenleyiciyi aç →</a>
+ <div class="info warn">Gerçek kişilerin yüzlerini veya seslerini kullanıyorsan izinlerini al. Örnekteki TikTok logosunu, kullanıcı adını veya başkalarının içeriğini kopyalamak yerine kendi özgün sahneni oluştur.</div>
+</aside>
+</div>
+</main>
+<footer>Reels Stüdyo · Referans dosyaları yalnızca tarayıcıda işlenir. Otomatik video üretimi için harici hizmet gerekir.</footer>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const presets={
+ dog:{subject:'An enormous, photorealistic fluffy white dog with a natural canine face, lifelike fur, black nose and four anatomically consistent paws, standing upright on its hind legs at human height',action:'The friendly dog dances playfully, gently moving its front paws in rhythm; surprised bystanders smile, laugh and film the unusual scene with their phones',place:'a crowded modern nightclub with a staircase, dancing adults and party guests',light:'vibrant deep red club lights, warm highlights, physically accurate shadows',extra:'Keep the same individual dog and background people across all shots. Natural paw gestures, believable contact with the floor.'},
+ cat:{subject:'An oversized photorealistic fluffy orange tabby cat with consistent feline anatomy and expressive eyes',action:'The cat stands up and dances with comedic confidence while adults react with delight',place:'a lively social event with a small crowd',light:'warm golden party lights and cinematic accent lighting',extra:'Keep the animal identifiable and anatomically consistent; no human face on the animal.'},
+ animal:{subject:'A large fantastical but believable friendly white wolf with convincing fur and detailed animal anatomy',action:'The creature performs a surprising friendly dance in front of a group of astonished adults',place:'an outdoor night market with people filming',light:'colorful practical market lights, dramatic but natural shadows',extra:'Make the creature physically plausible within a fantasy scene. The same creature appears in every shot.'},
+ palm:{subject:'A detailed, realistic 3D human hand model with neutral, non-identifiable features and clearly rendered palm creases',action:'The camera slowly reveals the traditional heart line and life line as elegant light paths trace across the palm, without claiming to predict medical outcomes or lifespan',place:'a sophisticated mystical studio with dark background and tasteful geometric motifs',light:'soft violet and gold volumetric light, realistic subsurface skin shading',extra:'Respect realistic anatomy: five fingers, accurate knuckles and palm structure. Educational traditional palm-reading aesthetic.'},
+ custom:{subject:'An original character with a distinctive but internally consistent appearance',action:'The character performs a visually surprising and engaging action',place:'a rich cinematic environment filled with believable detail',light:'natural, physically accurate lighting with atmospheric depth',extra:'Keep the identity and design of the fictional character consistent.'}
+};
+const styleText={realistic:'photorealistic live-action smartphone footage, natural motion and high-detail textures, authentic human reactions', '3d':'polished high-end 3D animated cinematic rendering, rich depth and physically based surfaces',cinema:'cinematic fantasy realism, subtle visual effects, dimensional composition and dramatic depth'};
+const cameraText={handheld:'vertical handheld smartphone camera, slight natural shakiness, candid framing',smooth:'smooth tracking shot with controlled cinematic movement',orbit:'gentle orbiting camera move with consistent scene geometry',close:'close-up storytelling camera with a subtle push-in and realistic focus falloff'};
+const soundText={party:'muffled dance music from speakers, cheers and authentic crowd ambience',comedy:'subtle playful musical cues, cheerful crowd and natural reactions',cinematic:'atmospheric cinematic music and subtle environmental sound',none:'no dialogue, no music, silent video'};
+const beats=[
+ 'Establish the location clearly; reveal the main character entering the scene as people turn their heads.',
+ 'Show the signature action in full-body view. Keep the motion natural, timed and continuous.',
+ 'Move to a medium close-up of the main character; show convincing small facial and body movements.',
+ 'Include believable reactions by the surrounding bystanders as the character continues the action.',
+ 'Reveal a new camera angle while keeping the same character, setting and lighting.',
+ 'Finish on an engaging expressive moment, with a natural ending that could smoothly cut to another clip.'
+];
+let refURL=null,frameURL=null,sceneData=null;
+function status(msg){$('formStatus').textContent=msg;}
+function usePreset(id){
+ const p=presets[id]||presets.dog;
+ for(const field of ['subject','action','place','light','extra'])$(field).value=p[field];
+ $('visualStyle').value=id==='palm'?'3d':'realistic';
+ $('camera').value=id==='palm'?'orbit':'handheld';
+ $('sound').value=id==='palm'?'cinematic':'party';
+}
+$('preset').addEventListener('change',e=>usePreset(e.target.value));
+$('resetDemo').addEventListener('click',()=>{
+ $('preset').value='dog';usePreset('dog');$('duration').value=16;
+ $('results').hidden=true;status('Örnek sahne yüklendi.');
+});
+usePreset('dog');
+function clearFrame(){
+ if(frameURL)URL.revokeObjectURL(frameURL);frameURL=null;
+ $('downloadFrame').disabled=true;$('stillImage').hidden=true;$('stillImage').removeAttribute('src');
+}
+function clearReference(){
+ if(refURL)URL.revokeObjectURL(refURL);refURL=null;
+ const video=$('refVideo');video.pause();video.removeAttribute('src');video.load();video.hidden=true;
+ clearFrame();
+}
+$('referenceFile').addEventListener('change',e=>{
+ const file=e.target.files[0];clearReference();
+ if(!file){$('referencePreview').hidden=true;return;}
+ if(file.size>350*1024*1024){$('referencePreview').hidden=true;status('Referans için en fazla 350 MB dosya kullan.');e.target.value='';return;}
+ refURL=URL.createObjectURL(file);
+ $('referencePreview').hidden=false;
+ const video=$('refVideo'),img=$('stillImage');
+ if(file.type.startsWith('video/')){
+  video.hidden=false;video.src=refURL;video.load();
+  $('captureFrame').disabled=false;
+  $('fileInfo').textContent='Video seçildi: '+file.name+'. Videoyu oynatıp istediğin saniyede durdur.';
+ }else if(file.type.startsWith('image/')){
+  video.hidden=true;img.hidden=false;img.src=refURL;
+  $('captureFrame').disabled=true;
+  $('fileInfo').textContent='Referans görsel seçildi: '+file.name+'. Bu resmi AI video servisine sen yükleyebilirsin.';
+ }else{
+  clearReference();$('referencePreview').hidden=true;status('Video veya resim dosyası seç.');return;
+ }
+});
+$('captureFrame').addEventListener('click',()=>{
+ const video=$('refVideo');
+ if(video.readyState<2||!video.videoWidth){$('fileInfo').textContent='Önce video görüntüsü yüklenene kadar bekle.';return;}
+ const canvas=document.createElement('canvas');canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+ canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
+ canvas.toBlob(blob=>{
+  if(!blob){$('fileInfo').textContent='Bu kare kaydedilemedi.';return;}
+  if(frameURL)URL.revokeObjectURL(frameURL);
+  frameURL=URL.createObjectURL(blob);$('stillImage').src=frameURL;$('stillImage').hidden=false;
+  $('downloadFrame').disabled=false;
+  $('fileInfo').textContent='Referans kare seçildi: '+video.currentTime.toFixed(1)+' saniye. PNG olarak indirip video üreticisine yükleyebilirsin.';
+ },'image/png');
+});
+function downloadURL(url,filename){const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();}
+$('downloadFrame').addEventListener('click',()=>{if(frameURL)downloadURL(frameURL,'reels-referans-kare.png');});
+function makeSegments(seconds){
+ const count=Math.max(2,Math.ceil(seconds/8)),span=seconds/count,parts=[];
+ for(let i=0;i<count;i++){
+  const start=i*span,end=(i+1)*span;
+  parts.push({index:i+1,start:+start.toFixed(2),end:+end.toFixed(2),duration:+(end-start).toFixed(2)});
+ }
+ return parts;
+}
+function makePrompt(settings,part,count){
+ const beat=beats[(part.index-1)%beats.length];
+ return [
+  'Generate a SINGLE, ORIGINAL '+part.duration.toFixed(1)+'-second vertical 9:16 AI video shot. Sequence: shot '+part.index+' of '+count+'.',
+  'VISUAL STYLE: '+styleText[settings.style]+'.',
+  'SUBJECT (exactly the same in every scene): '+settings.subject+'.',
+  'CORE ACTION: '+settings.action+'.',
+  'THIS SHOT: '+beat,
+  'ENVIRONMENT: '+settings.place+'.',
+  'LIGHTING: '+settings.light+'.',
+  'CAMERA: '+cameraText[settings.camera]+'.',
+  'AUDIO GUIDANCE: '+soundText[settings.sound]+'.',
+  'CONTINUITY: Use the same design, coat/fur/skin appearance, size, costumes, setting, camera height, proportions and lighting across the entire sequence. Exactly one main subject. The behavior must remain physically coherent.',
+  'ADDITIONAL NOTES: '+settings.extra,
+  'Do not recreate identifiable bystanders or copyrighted logos from any sample. Make an original scene. No on-screen text or watermark. No disfigured face, body deformation, extra limbs, flickering fur, warped hands or paws, sliding feet, inconsistent character proportions, teleportation, or sudden camera cuts within the shot.'
+ ].join('\n');
+}
+function settingsFromForm(){
+ const seconds=Number($('duration').value);
+ if(!Number.isFinite(seconds)||seconds<10){status('Video süresi en az 10 saniye olmalı.');$('duration').focus();return null;}
+ if(seconds>3600){status('Bir seferde en fazla 3600 saniyelik sahne planı hazırlanabilir.');return null;}
+ const subject=$('subject').value.trim(),action=$('action').value.trim();
+ if(subject.length<5||action.length<5){status('Ana karakteri ve hareketini ayrıntılı yaz.');return null;}
+ return {seconds,subject,action,place:$('place').value.trim()||'a visually rich authentic location',light:$('light').value.trim()||'cinematic natural lighting',extra:$('extra').value.trim()||'Maintain consistent details',style:$('visualStyle').value,camera:$('camera').value,sound:$('sound').value,preset:$('preset').value,ratio:'9:16'};
+}
+function readableTime(n){const m=Math.floor(n/60),s=n%60;return String(m).padStart(2,'0')+':'+String(s.toFixed(1)).padStart(4,'0');}
+function renderScenes(){
+ const holder=$('sceneList');holder.replaceChildren();
+ sceneData.parts.forEach(part=>{
+  const box=document.createElement('article');box.className='scene';
+  const header=document.createElement('div');header.className='scenehead';
+  const name=document.createElement('strong');name.textContent='Sahne '+part.index+' · '+readableTime(part.start)+' – '+readableTime(part.end);
+  const info=document.createElement('span');info.textContent=part.duration.toFixed(1)+' sn · 9:16';header.append(name,info);
+  const label=document.createElement('label');label.textContent='Video modeli için İngilizce komut';
+  const ta=document.createElement('textarea');ta.value=part.prompt;ta.rows=7;
+  ta.addEventListener('input',()=>{part.prompt=ta.value;});
+  const actions=document.createElement('div');actions.className='buttons';
+  const copy=document.createElement('button');copy.type='button';copy.textContent='Komutu kopyala';
+  copy.addEventListener('click',async()=>{await copyText(part.prompt);copy.textContent='Kopyalandı';});
+  const save=document.createElement('button');save.className='outline';save.type='button';save.textContent='Bu sahneyi indir';
+  save.addEventListener('click',()=>downloadText('sahne-'+part.index+'.txt',part.prompt));
+  actions.append(copy,save);box.append(header,label,ta,actions);holder.appendChild(box);
+ });
+ $('summary').textContent=sceneData.settings.seconds+' saniye, '+sceneData.parts.length+' ayrı AI video klibi. Her klip yaklaşık '+(sceneData.settings.seconds/sceneData.parts.length).toFixed(1)+' saniye. Önce klipleri üret, sonra montaj ekranında sırasıyla birleştir.';
+ $('results').hidden=false;
+}
+$('makeScenes').addEventListener('click',()=>{
+ const settings=settingsFromForm();if(!settings)return;
+ const segments=makeSegments(settings.seconds);
+ const parts=segments.map(part=>Object.assign(part,{prompt:makePrompt(settings,part,segments.length)}));
+ sceneData={settings,parts,generated:new Date().toISOString(),referenceFrameAvailable:Boolean(frameURL)};
+ renderScenes();status(parts.length+' sahnenin üretim komutu hazırlandı.');
+ $('results').scrollIntoView({behavior:'smooth',block:'start'});
+});
+async function copyText(s){
+ try{await navigator.clipboard.writeText(s);}
+ catch(e){const el=document.createElement('textarea');el.value=s;el.style.position='fixed';el.style.opacity='0';document.body.appendChild(el);el.select();document.execCommand('copy');el.remove();}
+}
+function allText(){
+ if(!sceneData)return '';
+ return 'REELS STUDYO - AI VIDEO SCENE PLAN\nTOTAL: '+sceneData.settings.seconds+' seconds | VERTICAL: 9:16\n\n'+
+  sceneData.parts.map(p=>'----- SHOT '+p.index+' / '+p.duration.toFixed(1)+' seconds -----\n'+p.prompt).join('\n\n');
+}
+function downloadText(filename,s,type='text/plain;charset=utf-8'){
+ const url=URL.createObjectURL(new Blob(['\ufeff',s],{type}));
+ downloadURL(url,filename);setTimeout(()=>URL.revokeObjectURL(url),4500);
+}
+$('copyAll').addEventListener('click',async()=>{await copyText(allText());$('copyAll').textContent='Tüm komutlar kopyalandı';});
+$('exportTxt').addEventListener('click',()=>downloadText('reels-ai-video-komutlari.txt',allText()));
+$('exportJson').addEventListener('click',()=>{if(sceneData)downloadText('reels-ai-sahne-plani.json',JSON.stringify(sceneData,null,2),'application/json');});
+window.addEventListener('pagehide',()=>{if(refURL)URL.revokeObjectURL(refURL);if(frameURL)URL.revokeObjectURL(frameURL);});
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
