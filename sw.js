@@ -1,5 +1,5 @@
-const CACHE='reels-studyo-pwa-v4';
-const APP=['./','./index.html','./editor.html','./editor.js','./editor.css','./music-library.js','./manifest.webmanifest','./icons/icon.svg','./icons/icon-192.png','./icons/icon-512.png'];
+const CACHE='reels-studyo-pwa-v5';
+const APP=['./','./index.html','./editor.html','./editor.js','./quick-editor.js','./editor.css','./music-library.js','./manifest.webmanifest','./icons/icon.svg','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>{
  e.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP)));self.skipWaiting();
 });
