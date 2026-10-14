@@ -39,18 +39,18 @@ button{border:0;border-radius:11px;font:inherit;font-weight:700;font-size:13px;p
   <div class="panel">
    <h2>1. Konunu ve metnini belirle</h2>
    <p class="hint">Konu girerek ücretsiz bir taslak oluştur veya sahnelerini kendin yaz. Otomatik taslak kural tabanlıdır; yapay zekâ üretimi değildir.</p>
-   <label for="topic">Konu</label><input id="topic" value="Çocuklara dürüstlük neden önemlidir?" maxlength="160" placeholder="Örnek: Çocuklara dürüstlüğü anlatan masal">
+   <label for="topic">Konu</label><input id="topic" value="Avuç içindeki yaşam çizgisinin geleneksel yorumu" maxlength="160" placeholder="Örnek: Kalp çizgisi, baş çizgisi, yaşam çizgisi">
    <div class="grid">
-    <div><label for="kind">İçerik türü</label><select id="kind"><option value="egitici">Eğitici bilgi</option><option value="masal">Çocuk masalı</option><option value="motivasyon">Motivasyon</option><option value="tanitim">Ürün tanıtımı</option></select></div>
+    <div><label for="kind">İçerik türü</label><select id="kind"><option value="elanalizi" selected>El analizi</option><option value="egitici">Eğitici bilgi</option><option value="masal">Çocuk masalı</option><option value="motivasyon">Motivasyon</option><option value="tanitim">Ürün tanıtımı</option></select></div>
     <div><label for="template">Görünüm</label><select id="template"><option value="ocean">Gece mavisi</option><option value="sunset">Gün batımı</option><option value="forest">Orman yeşili</option><option value="berry">Mor tonlar</option><option value="light">Açık ve sade</option></select></div>
    </div>
-   <div class="actions"><button class="secondary" id="draftBtn">Konuya göre taslak hazırla</button><button class="outline" id="sampleBtn">Örnek masal yükle</button></div>
-   <label for="title">Video başlığı</label><input id="title" value="DÜRÜSTLÜĞÜN GÜCÜ" maxlength="100">
-   <label for="script">Video sahneleri</label><textarea id="script" spellcheck="true">Bir sözün değeri | Doğruyu söylemek bazen zor gelebilir.
-Dürüstlük güven oluşturur | İnsanlar birbirine güvenebildiğinde daha güçlü bağlar kurar.
-Hata yapmak doğaldır | Önemli olan hatayı saklamak değil, sorumluluk almaktır.
-Küçük bir adım | Bugün doğruyu söylemek, yarın daha büyük bir güven oluşturur.
-Sen ne düşünüyorsun? | Dürüstlük senin için ne ifade ediyor?</textarea>
+   <div class="actions"><button class="secondary" id="draftBtn">Konuya göre taslak hazırla</button><button class="outline" id="sampleBtn">Örnek el analizi yükle</button></div>
+   <label for="title">Video başlığı</label><input id="title" value="YAŞAM ÇİZGİSİ NE ANLATIR?" maxlength="100">
+   <label for="script">Video sahneleri</label><textarea id="script" spellcheck="true">Yaşam çizgisi nedir? | Avuç içinde başparmağın çevresinde uzanan çizgi, geleneksel el okuma anlatılarında sıkça incelenir.
+Çizgi nereden başlar? | İşaret parmağı ile başparmak arasından başlayarak bileğe doğru yay şeklinde uzanabilir.
+Nasıl yorumlanır? | Klasik el okuma geleneğinde çizginin görünümü farklı simgesel açıklamalarla ele alınır.
+Yanılgılara dikkat | Bu çizginin uzunluğu kişinin ömrünü göstermez; böyle bir bilimsel yöntem yoktur.
+Senin merakın ne? | Bir sonraki videoda hangi çizgiyi ele almamızı istersin?</textarea>
    <p class="hint">Her satır bir sahnedir. "Başlık | Açıklama" biçimini kullan. En fazla 12 sahne.</p>
   </div>
   <div class="panel">
@@ -146,7 +146,13 @@ function setStatus(message,type=''){const el=$('status');el.textContent=message;
 function safeText(str,n=140){return String(str||'').replace(/[<>]/g,'').trim().slice(0,n)}
 function parseScenes(){let scenes=$('script').value.split(/\n+/).map(s=>s.trim()).filter(Boolean).slice(0,12).map(line=>{const i=line.indexOf('|');return i<0?{head:safeText(line,105),body:''}:{head:safeText(line.slice(0,i),105),body:safeText(line.slice(i+1),230)};});if(!scenes.length)scenes=[{head:'İlk sahne',body:'Buraya anlatmak istediğini yaz.'}];return scenes}
 function totalDuration(){return parseScenes().length*Number($('seconds').value)}
-function draft(){const raw=safeText($('topic').value,110)||'Yeni bir konu';const kind=$('kind').value;let lines=[];if(kind==='masal'){
+function draft(){const raw=safeText($('topic').value,110)||'Yeni bir konu';const kind=$('kind').value;let lines=[];if(kind==='elanalizi'){
+lines=[raw+' | Geleneksel el okuma yaklaşımında bu özellik nasıl tarif edilir?',
+'Görünüm | Fotoğraf üzerinde konumu ve biçimini birlikte inceleyelim.',
+'Klasik yorum | Bu özellik eski el okuma kaynaklarında simgesel olarak ele alınır.',
+'Önemli ayrım | El çizgileri karakteri, sağlığı veya geleceği bilimsel olarak kanıtlanmış biçimde belirlemez.',
+'Yorumlarda buluşalım | Sen hangi el çizgisini merak ediyorsun?'];
+}else if(kind==='masal'){
 lines=[`Bir zamanlar... | Küçük bir kahraman, ${raw.toLocaleLowerCase('tr-TR')} konusunu öğrenmek istiyordu.`,`Bir gün... | Karşısına beklenmedik bir durum çıktı. Ne yapacağını düşünmeye başladı.`,`Cesur bir karar | Biraz düşündükten sonra doğru olanı yapmayı seçti.`,`Güzel bir sonuç | İyi niyeti ve sabrı sayesinde yeni bir dost kazandı.`,`Masalın öğüdü | Küçük, doğru adımlar büyük değişiklikler yaratabilir.`];
 }else if(kind==='motivasyon'){
 lines=[`Bugün başla | ${raw} için ilk adımı atmaya ne dersin?`,`Küçük adımlar | Büyük hedefler, her gün atılan küçük adımlarla başlar.`,`Vazgeçme | Zorlandığında biraz dinlen ama hedefini unutma.`,`Gelişimini gör | Dün yapamadığın bir şeyi bugün deneyebilirsin.`,`Bir adım daha | Bugün kendin için küçük bir karar ver.`];
@@ -156,7 +162,16 @@ lines=[`${raw} | Aradığın çözümle tanış.`,`Neden önemli? | Günlük hay
 lines=[`${raw} | Bu konunun neden önemli olduğunu birlikte keşfedelim.`,`1. Temel fikir | Önce konunun ne anlama geldiğini anlamak gerekir.`,`2. Günlük hayatta | Küçük davranışlar ve alışkanlıklar düşündüğümüzden daha etkilidir.`,`3. Uygulama | Bugün uygulayabileceğin basit bir adım belirle.`,`Senin görüşün ne? | Deneyimlerini yorumlarda paylaş.`];
 }
 $('title').value=raw.toLocaleUpperCase('tr-TR').slice(0,65);$('script').value=lines.join('\n');render();setStatus('Beş sahnelik düzenlenebilir taslak hazırlandı. Metinleri gözden geçirerek özgünleştirebilirsin.','ok');}
-function example(){ $('topic').value='Paylaşmayı öğrenen küçük tilki';$('title').value='MİNİK TİLKİNİN HİKÂYESİ';$('kind').value='masal';$('template').value='forest';$('script').value=`Ormanın küçük tilkisi | Pofuduk adında bir tilki ormanda tek başına oyun oynuyordu.\nParlak kırmızı elma | Bir sabah ağaç altında kocaman bir elma buldu.\nYeni bir arkadaş | Tam yiyecekken aç bir tavşanla karşılaştı.\nPaylaşınca çoğalır | Elmayı ikiye böldü. İkisi de neşeyle gülümsedi.\nMasalın öğüdü | Paylaşmak dostluğu büyütür ve kalpleri ısıtır.`;render();setStatus('Örnek çocuk masalı yüklendi. Fotoğraf eklersen ilgili sahnelerde kullanılır.','ok');}
+function example(){
+$('topic').value='Avuç içindeki yaşam çizgisinin geleneksel yorumu';
+$('title').value='YAŞAM ÇİZGİSİ NE ANLATIR?';$('kind').value='elanalizi';$('template').value='berry';
+$('script').value=['Yaşam çizgisi nedir? | Başparmağın çevresindeki kıvrımlı çizgiye geleneksel el okuma çalışmalarında yaşam çizgisi denir.',
+'Çizginin başlangıcı | Elin başparmak ile işaret parmağı arasındaki bölümünden ilerler.',
+'Eski yorumlar | Geleneksel kaynaklarda çizgiye dayanarak simgesel anlatımlar yapılmıştır.',
+'Bilimsel sınır | Yaşam çizgisi ömür uzunluğunu veya hastalıkları güvenilir biçimde tahmin edemez.',
+'Sıradaki video | Kalp çizgisini de incelememizi ister misin?'].join('\n');
+render();setStatus('Örnek el analizi metni yüklendi. Görseller ve hazır müziklerle Reels hazırlayabilirsin.','ok');
+}
 function rrect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
 function wrapLines(text,maxW,font,maxLines){ctx.font=font;const words=(text||'').split(/\s+/);let lines=[],line='';for(let w of words){if(ctx.measureText(w).width>maxW){let pieces=[];let acc='';for(const c of w){if(ctx.measureText(acc+c).width>maxW&&acc){pieces.push(acc);acc=c}else acc+=c;}if(acc)pieces.push(acc);for(const part of pieces){if(line){lines.push(line);line=''}lines.push(part)}continue;}let attempt=line?line+' '+w:w;if(ctx.measureText(attempt).width>maxW&&line){lines.push(line);line=w}else line=attempt;}if(line)lines.push(line);if(lines.length>maxLines){lines=lines.slice(0,maxLines);let last=lines[maxLines-1];while(ctx.measureText(last+'…').width>maxW&&last.length>0)last=last.slice(0,-1);lines[maxLines-1]=last+'…';}return lines;}
 function renderText(text,cx,cy,fontSize,maxW,maxLines,color,weight='800',lineHeight=1.21){let sz=fontSize;let lines;do{lines=wrapLines(text,maxW,`${weight} ${sz}px Arial, sans-serif`,maxLines);if(lines[lines.length-1]?.endsWith('…')&&sz>fontSize*.72){sz-=2;continue;}break;}while(sz>fontSize*.72);ctx.font=`${weight} ${sz}px Arial, sans-serif`;ctx.fillStyle=color;ctx.textAlign='center';ctx.textBaseline='middle';const step=sz*lineHeight,start=cy-step*(lines.length-1)/2;lines.forEach((l,i)=>ctx.fillText(l,cx,start+i*step));return lines.length*step;}
