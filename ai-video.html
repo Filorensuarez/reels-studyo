@@ -78,7 +78,7 @@ footer{font-size:12px;color:var(--muted);padding-bottom:30px}
  </div>
 </section>
 <section class="panel">
- <h2>2. Üretmek istediğin sahneyi tarif et</h2>
+ <h2>2. Videonu anlat</h2><p class="note">Sadece istediğin yerleri değiştir. Hazır örnekler Türkçedir. Video üreticisi için gereken İngilizce komutlar otomatik hazırlanır.</p>
  <label for="preset">Hazır video türü</label>
  <select id="preset">
   <option value="dog">1. Referans: Dev beyaz köpek dans ediyor</option>
@@ -111,16 +111,16 @@ footer{font-size:12px;color:var(--muted);padding-bottom:30px}
  <label for="dialogue">Kısa Türkçe konuşma repliği (isteğe bağlı)</label>
  <textarea id="dialogue" rows="2" maxlength="350" placeholder="Örnek: Arkadaşlar, müziği duyunca kendimi tutamıyorum!"></textarea>
  <p class="note">Konuşmanın dudak hareketiyle uyumu, kullandığın AI video hizmetine bağlıdır. Türkçe altyazıları daha sonra Reels düzenleyicisinde ekleyebilirsin.</p>
- <label for="extra">Özel ayrıntılar (isteğe bağlı)</label>
+ <details><summary style="cursor:pointer;font-weight:700;padding:12px;background:#253c56;border-radius:9px">Ek ayarlar (isteğe bağlı)</summary><label for="extra">Özel ayrıntılar</label>
  <textarea id="extra" rows="2" placeholder="Örnek: İnsanlar şaşırsın, bir kişi cep telefonuyla çekim yapsın."></textarea>
  <div class="buttons">
-  <button id="makeScenes" type="button" class="primary">AI video sahnelerini hazırla</button>
+  <button id="makeScenes" type="button" class="primary">Video planını oluştur</button>
   <button id="resetDemo" type="button" class="outline">Örnek köpek sahnesini yükle</button>
  </div>
  <div id="formStatus" class="status" role="status" aria-live="polite"></div>
 </section>
 <section id="results" class="panel" hidden>
- <h2>3. Üretime hazır sahneler</h2>
+ <h2>3. Video sahnelerin hazır</h2>
  <p class="note">Her klip ayrı üretilecek şekilde tasarlandı. Sahne başlıkları ve video komutları özgündür; referans videodaki gerçek kişilerin yüzleri kopyalanmaz.</p>
  <div class="summary" id="summary"></div>
  <div class="buttons">
@@ -160,12 +160,12 @@ footer{font-size:12px;color:var(--muted);padding-bottom:30px}
 'use strict';
 const $=id=>document.getElementById(id);
 const presets={
- dog:{subject:'An enormous, photorealistic fluffy white dog with a natural canine face, lifelike fur, black nose and four anatomically consistent paws, standing upright on its hind legs at human height',action:'The friendly dog dances playfully, gently moving its front paws in rhythm; surprised bystanders smile, laugh and film the unusual scene with their phones',place:'a crowded modern nightclub with a staircase, dancing adults and party guests',light:'vibrant deep red club lights, warm highlights, physically accurate shadows',extra:'Keep the same individual dog and background people across all shots. Natural paw gestures, believable contact with the floor.'},
- courtyard:{subject:'An original, fictional, expressive adult male party guest with a natural face, short dark hair, a red-and-white striped long sleeve shirt and dark trousers; realistic proportions, natural human hands and gestures',action:'The guest delivers one short humorous line in Turkish with expressive facial gestures, turns toward his friends and bursts into playful, exaggerated but natural dancing; bystanders laugh, clap and respond, a traditional drum is briefly visible',place:'a nighttime open-air neighborhood celebration in a paved apartment courtyard, modest residential building facades, adults gathered on bright plastic chairs and friends standing nearby',light:'warm outdoor tungsten bulbs, believable night shadows, practical on-camera phone light, natural skin tones',extra:'Start with a speaking close-up and transition into full-body energetic comedic dance, small crowd reactions, and a brief drummer reveal. Avoid recreating anyone in the original reference or any copied logos and account names.',dialogue:'Arkadaşlar, müziği duyunca kendimi tutamıyorum!'},
- cat:{subject:'An oversized photorealistic fluffy orange tabby cat with consistent feline anatomy and expressive eyes',action:'The cat stands up and dances with comedic confidence while adults react with delight',place:'a lively social event with a small crowd',light:'warm golden party lights and cinematic accent lighting',extra:'Keep the animal identifiable and anatomically consistent; no human face on the animal.'},
- animal:{subject:'A large fantastical but believable friendly white wolf with convincing fur and detailed animal anatomy',action:'The creature performs a surprising friendly dance in front of a group of astonished adults',place:'an outdoor night market with people filming',light:'colorful practical market lights, dramatic but natural shadows',extra:'Make the creature physically plausible within a fantasy scene. The same creature appears in every shot.'},
- palm:{subject:'A detailed, realistic 3D human hand model with neutral, non-identifiable features and clearly rendered palm creases',action:'The camera slowly reveals the traditional heart line and life line as elegant light paths trace across the palm, without claiming to predict medical outcomes or lifespan',place:'a sophisticated mystical studio with dark background and tasteful geometric motifs',light:'soft violet and gold volumetric light, realistic subsurface skin shading',extra:'Respect realistic anatomy: five fingers, accurate knuckles and palm structure. Educational traditional palm-reading aesthetic.'},
- custom:{subject:'An original character with a distinctive but internally consistent appearance',action:'The character performs a visually surprising and engaging action',place:'a rich cinematic environment filled with believable detail',light:'natural, physically accurate lighting with atmospheric depth',extra:'Keep the identity and design of the fictional character consistent.'}
+ dog:{subject:'İnsan boyunda, kabarık beyaz tüylü, gerçekçi bir köpek',action:'Köpek iki ayağı üzerinde neşeyle dans etsin. Çevredeki insanlar gülerek izlesin ve telefonlarıyla çekim yapsın.',place:'Kalabalık bir gece kulübü',light:'Kırmızı parti ışıkları, sıcak ve doğal gölgeler',extra:'Köpeğin görünümü tüm sahnelerde aynı kalsın. Hareketler doğal olsun.'},
+ courtyard:{subject:'Kısa koyu saçlı, kırmızı beyaz çizgili üst giymiş, tamamen kurgusal yetişkin bir erkek',action:'Önce komik bir söz söylesin, sonra neşeyle dans etsin. Arkadaşları gülsün ve alkışlasın.',place:'Gece vakti apartmanların arasındaki açık hava eğlencesi',light:'Sıcak sokak lambaları, doğal gece ışığı',extra:'Konuşmalı giriş, dans ve davullu final olsun. Gerçek videodaki kişilerin yüzleri kopyalanmasın.',dialogue:'Arkadaşlar, müziği duyunca kendimi tutamıyorum!'},
+ cat:{subject:'Kabarık turuncu tüylü, gerçekçi ve iri bir kedi',action:'Kedi iki ayağı üzerinde komik şekilde dans etsin. İnsanlar şaşırsın ve gülsün.',place:'Kalabalık bir eğlence ortamı',light:'Sıcak sarı parti ışıkları',extra:'Kedinin görünümü sahneler arasında değişmesin.'},
+ animal:{subject:'Gerçekçi görünümlü, büyük, beyaz ve dost canlısı bir kurt',action:'Kurt insanların önünde eğlenceli şekilde dans etsin.',place:'Gece açık hava pazarı',light:'Renkli ışıklar ve doğal gölgeler',extra:'Hayvanın görünümü ve boyutu her sahnede aynı kalsın.'},
+ palm:{subject:'Avuç içi çizgileri belirgin, gerçekçi üç boyutlu bir el modeli',action:'Kamera avuç içine yaklaşsın. Kalp çizgisi ve yaşam çizgisi ışıkla vurgulansın.',place:'Koyu arka planlı, mistik bir stüdyo',light:'Mor ve altın renkli yumuşak ışık',extra:'Elin anatomisi gerçekçi olsun. Beş parmak doğru görünsün. Geleneksel el analizi anlatımı olsun.'},
+ custom:{subject:'Özgün ve gerçekçi bir karakter',action:'Karakter dikkat çekici ve eğlenceli bir hareket yapsın.',place:'Sinematik bir ortam',light:'Doğal ve etkileyici ışık',extra:'Karakterin görünümü tüm sahnelerde aynı kalsın.'}
 };
 const styleText={realistic:'photorealistic live-action smartphone footage, natural motion and high-detail textures, authentic human reactions', '3d':'polished high-end 3D animated cinematic rendering, rich depth and physically based surfaces',cinema:'cinematic fantasy realism, subtle visual effects, dimensional composition and dramatic depth'};
 const cameraText={handheld:'vertical handheld smartphone camera, slight natural shakiness, candid framing',smooth:'smooth tracking shot with controlled cinematic movement',orbit:'gentle orbiting camera move with consistent scene geometry',close:'close-up storytelling camera with a subtle push-in and realistic focus falloff'};
@@ -294,7 +294,7 @@ function renderScenes(){
   const header=document.createElement('div');header.className='scenehead';
   const name=document.createElement('strong');name.textContent='Sahne '+part.index+' · '+readableTime(part.start)+' – '+readableTime(part.end);
   const info=document.createElement('span');info.textContent=part.duration.toFixed(1)+' sn · 9:16';header.append(name,info);
-  const label=document.createElement('label');label.textContent='Video modeli için İngilizce komut';
+  const label=document.createElement('label');label.textContent='Video üreticiye yapıştırılacak metin (otomatik)';
   const ta=document.createElement('textarea');ta.value=part.prompt;ta.rows=7;
   ta.addEventListener('input',()=>{part.prompt=ta.value;});
   const actions=document.createElement('div');actions.className='buttons';
