@@ -1,5 +1,5 @@
-const CACHE='reels-studyo-pwa-v2';
-const APP=['./','./index.html','./manifest.webmanifest','./icons/icon.svg'];
+const CACHE='reels-studyo-pwa-v3';
+const APP=['./','./index.html','./manifest.webmanifest','./icons/icon.svg','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(APP)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('reels-studyo-pwa-')&&k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
 self.addEventListener('fetch',event=>{const r=event.request;if(r.method!=='GET'||new URL(r.url).origin!==self.location.origin)return;if(r.mode==='navigate')event.respondWith(fetch(r).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));}return response}).catch(()=>caches.match('./index.html')));else event.respondWith(caches.match(r).then(cached=>cached||fetch(r)));});
