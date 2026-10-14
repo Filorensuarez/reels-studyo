@@ -12,7 +12,7 @@ from face_swap import router as face_swap_router
 
 app = FastAPI(title="Reels Stüdyo AI", version="0.1.0")
 origin = os.getenv("FRONTEND_ORIGIN", "https://filorensuarez.github.io")
-app.add_middleware(CORSMiddleware, allow_origins=[origin], allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
+app.add_middleware(CORSMiddleware, allow_origins=[origin], allow_methods=["GET", "POST"], allow_headers=["Content-Type", "Authorization"])
 
 class VideoRequest(BaseModel):
     story: str = Field(min_length=5, max_length=2500)
