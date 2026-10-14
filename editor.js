@@ -32,7 +32,7 @@ function draw(v){
 function timelinePosition(pos){
  const length=total();pos=clamp(pos,0,Math.max(0,length));currentTime=pos;
  $('playLabel').textContent=fmt(pos);$('totalLabel').textContent=fmt(length);
- $('seekBar').value=length?Math.round(pos/length*1000):0;
+ $('seekBar').value=length?Math.round(pos/length*1000):0; if($('atLabel'))$('atLabel').textContent='Seçili an: '+fmt(pos);
 }
 function updateDuration(){
  const len=total();$('durationLabel').textContent='Birleştirilmiş süre: '+fmt(len);
@@ -62,7 +62,7 @@ function clipAt(t){
  }
  return null;
 }
-function clearUnusedAsset(asset){if(!clips.some(c=>c.asset===asset))URL.revokeObjectURL(asset.url);}
+function clearUnusedAsset(asset){/* URL saklanır: geri al işlemi eski parçayı yeniden kullanabilmelidir. */}
 function stopMusic(){
  musicToken++;try{musicSource?.stop()}catch(e){}musicSource=null;try{musicCtx?.close()}catch(e){}musicCtx=null;musicGainNode=null;
  $('sampleMusic').textContent='♪ Müziği dinle';
@@ -90,9 +90,9 @@ async function fileMetadata(url){
   v.src=url;v.load();
  });
 }
-async function addVideos(){
+async function addVideos(fileInput=$('videoFiles'),insertAt=null){
  if(run){status('Düzenleme işlemi sürerken yeni video eklenemez.','error');return;}
- const files=[...$('videoFiles').files];$('videoFiles').value='';
+ const files=[...fileInput.files];fileInput.value='';
  if(!files.length)return;
  const available=Math.max(0,MAX_CLIPS-clips.length);
  let added=0;
@@ -101,13 +101,13 @@ async function addVideos(){
   try{status('Video okunuyor: '+file.name);
    const dur=await fileMetadata(url);
    const asset={url,name:file.name,duration:dur};
-   clips.push({id:++uid,asset,from:0,to:dur});added++;
+   const newClip={id:++uid,asset,from:0,to:dur};if(insertAt==null)clips.push(newClip);else clips.splice(insertAt++,0,newClip);added++;
   }catch(e){URL.revokeObjectURL(url);status(file.name+': '+e.message,'error');}
  }
- if(!added&&files.length>0)return;
+ if(!added&&files.length>0)return 0;
  refreshList();await seekTo(0);
  $('fileStatus').textContent=clips.length+' klip hazır. En fazla '+MAX_CLIPS+' klip eklenebilir.';
- status(added+' video eklendi. Süreleri ayarla, gerekirse böl ve sırasını değiştir.','ok');
+ status(added+' video eklendi. Süreleri ayarla, gerekirse böl ve sırasını değiştir.','ok');return added;
 }
 function eventWait(v,name,timeout=20000){
  return new Promise((resolve,reject)=>{
@@ -313,16 +313,89 @@ $('clipList').addEventListener('click',e=>{
  if(action==='select'){let t=0;for(let i=0;i<index;i++)t+=clips[i].to-clips[i].from;seekTo(t);return;}
  refreshList();seekTo(0);
 });
-$('seekBar').addEventListener('input',()=>{if(run)return;seekTo(total()*Number($('seekBar').value)/1000);});
+$('seekBar').addEventListener('input',()=>{if(run?.type==='preview')stopRun();if(run)return;seekTo(total()*Number($('seekBar').value)/1000);});
 $('captionText').addEventListener('input',()=>draw(player));
 $('contain').addEventListener('change',()=>draw(player));
 $('musicGain').addEventListener('input',()=>{$('musicGainValue').textContent='%'+$('musicGain').value;if(musicGainNode)musicGainNode.gain.value=Number($('musicGain').value)/100;});
 $('sampleMusic').addEventListener('click',playSample);
 $('editorMusic').addEventListener('change',stopMusic);
 $('previewPlay').addEventListener('click',playPreview);
-$('previewStop').addEventListener('click',()=>{stopRun();player.pause();stopMusic();timelinePosition(0);seekTo(0);});
+$('previewStop').addEventListener('click',()=>{stopRun();player.pause();stopMusic();timelinePosition(currentTime);draw(player);status('Video durduruldu. Şimdi bu saniyede kesebilir veya klip ekleyebilirsin.','ok');});
 $('makeVideo').addEventListener('click',exportClips);
 $('cancelVideo').addEventListener('click',()=>{if(run?.type==='export'){run.cancelled=true;run.video.pause();status('İptal ediliyor...');}});
 window.addEventListener('beforeunload',()=>{stopRun();stopMusic();clips.forEach(c=>URL.revokeObjectURL(c.asset.url));if(outputURL)URL.revokeObjectURL(outputURL);});
+const undoHistory=[];
+function saveUndo(){undoHistory.push({clips:clips.map(c=>({...c})),at:currentTime});if(undoHistory.length>20)undoHistory.shift();}
+function undoQuick(){
+ if(run){status('Önce oynatmayı duraklat.','error');return;}
+ const prev=undoHistory.pop();if(!prev){status('Geri alınacak işlem yok.');return;}
+ clips.splice(0,clips.length,...prev.clips);refreshList();seekTo(prev.at);status('Son düzenleme geri alındı.','ok');
+}
+function pauseAtCurrent(){
+ if(run?.type==='export'){status('Video kaydı sürerken düzenleme yapılamaz.','error');return false;}
+ if(run?.type==='preview')stopRun();player.pause();stopMusic();return true;
+}
+function quickAction(action){
+ if(!clips.length){status('Önce bir video yükle.','error');return;}
+ if(!pauseAtCurrent())return;
+ const p=clipAt(currentTime),c=p.clip;
+ const point=c.from+p.offset,eps=.12;
+ if(action==='split'){
+  if(point<=c.from+eps||point>=c.to-eps){status('Bölmek için oynatma çizgisini parçanın ortasına getir.','error');return;}
+  saveUndo();const tail={id:++uid,asset:c.asset,from:round(point),to:c.to};c.to=round(point);
+  clips.splice(p.index+1,0,tail);refreshList();seekTo(p.startAt+(c.to-c.from));
+  status('Video tam bu noktada iki parçaya bölündü. İstersen parçayı çıkar veya araya video ekle.','ok');
+ }else if(action==='start'){
+  if(point>=c.to-eps){status('Başlangıç noktasını parçanın bitişinden önce seç.','error');return;}
+  saveUndo();c.from=round(clamp(point,0,c.to-.1));refreshList();seekTo(p.startAt);
+  status('Bu parçanın başındaki görüntüler çıkarıldı.','ok');
+ }else if(action==='end'){
+  if(point<=c.from+eps){status('Bitiş noktasını parçanın başlangıcından sonra seç.','error');return;}
+  saveUndo();c.to=round(clamp(point,c.from+.1,c.asset.duration));refreshList();seekTo(Math.max(0,p.startAt+c.to-c.from-.06));
+  status('Bu parçanın sonundaki görüntüler çıkarıldı.','ok');
+ }else if(action==='delete'){
+  saveUndo();clips.splice(p.index,1);refreshList();seekTo(Math.min(p.startAt,total()));
+  status('Seçili video parçası çıkarıldı. Geri Al ile geri getirebilirsin.','ok');
+ }
+}
+async function quickInsert(input){
+ if(!input.files.length)return;
+ if(!clips.length){saveUndo();await addVideos(input);return;}
+ if(!pauseAtCurrent())return;
+ const p=clipAt(currentTime),c=p.clip,point=c.from+p.offset,eps=.12;
+ saveUndo();let index=p.index;
+ if(point>=c.to-eps)index=p.index+1;
+ else if(point>c.from+eps){
+  const tail={id:++uid,asset:c.asset,from:round(point),to:c.to};c.to=round(point);
+  clips.splice(p.index+1,0,tail);index=p.index+1;
+ }
+ const count=await addVideos(input,index);
+ if(!count){undoQuick();return;}
+ refreshList();
+ let target=0;for(let i=0;i<index;i++)target+=clips[i].to-clips[i].from;
+ await seekTo(target);
+ status(count+' video seçtiğin noktanın arasına eklendi.','ok');
+}
+function addSuggestedMoment(id,from,to){
+ if(run){status('Önce videoyu durdur.','error');return;}
+ const c=clips.find(c=>c.id===id);
+ if(!c){status('Klip bulunamadı. Yeniden tara.','error');return;}
+ from=round(clamp(from,c.from,c.to-.1));to=round(clamp(to,from+.1,c.to));
+ if(to-from<.3)return;
+ saveUndo();const start=total();clips.push({id:++uid,asset:c.asset,from,to});refreshList();seekTo(start);
+ status('Öne çıkan bölüm sona yeni bir parça olarak eklendi. İstersen diğer parçaları silebilirsin.','ok');
+}
+window.ReelsQuickAPI={
+ getClips(){let elapsed=0;return clips.map(c=>{const copy={id:c.id,asset:c.asset,from:c.from,to:c.to,timelineStart:elapsed};elapsed+=c.to-c.from;return copy;});},
+ getTime(){return currentTime;},
+ getTotal:total,
+ seek:seekTo,
+ pause:pauseAtCurrent,
+ edit:quickAction,
+ insert:quickInsert,
+ undo:undoQuick,
+ addSuggestedMoment,
+ status
+};
 draw(null);updateDuration();
 })();
