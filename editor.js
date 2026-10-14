@@ -140,7 +140,7 @@ async function seekTo(t){
  }catch(e){if(token===seekToken)status('Ön izleme: '+e.message,'error')}
 }
 function stopRun(){
- if(!run)return;run.cancelled=true;
+ if(!run)return;run.cancelled=true;try{run.narrator?.stop()}catch(e){}
  try{run.video.pause()}catch(e){}
  if(run.type==='preview'){run=null;stopMusic();$('previewPlay').textContent='▶ Ön izlemeyi oynat';}
 }
@@ -187,6 +187,14 @@ async function playPreview(){
    source.connect(gain);gain.connect(c.destination);musicSource=source;musicGainNode=gain;
    source.start(0,currentTime%b.duration);
   }
+  if(window.ReelsNarration?.hasAudio()){
+    if(!musicCtx){const C=window.AudioContext||window.webkitAudioContext;musicCtx=new C();await musicCtx.resume();}
+    const d=window.ReelsNarration.getAudioBuffer(musicCtx);
+    const narrator=musicCtx.createBufferSource();narrator.buffer=d.buffer;narrator.playbackRate.value=d.playbackRate;
+    narrator.connect(musicCtx.destination);
+    const endTime=narrator.buffer.duration/d.playbackRate;
+    if(currentTime<endTime){narrator.start(0,currentTime*d.playbackRate);controller.narrator=narrator;}
+  }
   await playSequence(player,controller,currentTime);
   if(!controller.cancelled){status('Ön izleme tamamlandı.');currentTime=0;timelinePosition(0);}
  }catch(e){if(!controller.cancelled)status('Ön izleme hatası: '+e.message,'error');}
@@ -230,13 +238,14 @@ async function exportClips(){
  stopMusic();++seekToken;player.pause();
  if(!window.MediaRecorder||!cv.captureStream){status('Telefon tarayıcısı video dışa aktarımını desteklemiyor. Güncel Chrome ile dene.','error');return;}
  const W=Number($('outputSize').value),FPS=Number($('outputFps').value),musicId=$('editorMusic').value;
- const audio=$('keepAudio').checked||musicId!=='none',mime=chooseMime(audio);
+ const hasNarration=Boolean(window.ReelsNarration?.hasAudio());
+ const audio=$('keepAudio').checked||musicId!=='none'||hasNarration,mime=chooseMime(audio);
  if(!mime){status('Desteklenen video kayıt biçimi bulunamadı.','error');return;}
  const v=document.createElement('video');v.playsInline=true;v.preload='auto';v.style.cssText='position:fixed;left:-10px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
  document.body.appendChild(v);
  const controller={type:'export',cancelled:false,video:v};run=controller;
  $('cancelVideo').hidden=false;$('makeVideo').disabled=true;$('previewPlay').disabled=true;
- let recorder=null,stream=null,canvasStream=null,context=null,source=null,music=null,videoTracks=[],fallback=null;
+ let recorder=null,stream=null,canvasStream=null,context=null,source=null,music=null,narration=null,videoTracks=[],fallback=null;
  try{
   cv.width=W;cv.height=Math.round(W*16/9);
   await loadClip(v,clips[0],clips[0].from,controller);draw(v);
@@ -251,6 +260,11 @@ async function exportClips(){
     const b=await chosenBuffer(context);music=context.createBufferSource();const gain=context.createGain();gain.gain.value=Number($('musicGain').value)/100;
     music.buffer=b;music.loop=true;music.connect(gain);gain.connect(dest);
    }
+   if(hasNarration){
+    const data=window.ReelsNarration.getAudioBuffer(context);
+    narration=context.createBufferSource();narration.buffer=data.buffer;narration.playbackRate.value=data.playbackRate;
+    const narrGain=context.createGain();narrGain.gain.value=.94;narration.connect(narrGain);narrGain.connect(dest);
+   }
    tracks.push(...dest.stream.getAudioTracks());
   }else v.muted=true;
   stream=new MediaStream(tracks);
@@ -260,7 +274,7 @@ async function exportClips(){
    recorder.onerror=e=>reject(e.error||Error('Video kayıt hatası.'));
    recorder.onstop=()=>resolve(new Blob(chunks,{type:mime.split(';')[0]}));
   });
-  recorder.start(600);if(music)music.start(0);
+  recorder.start(600);if(music)music.start(0);if(narration)narration.start(0);
   status('Klipler birleştiriliyor. Süre: '+fmt(total())+'. Ekranı açık tut.');
   await playSequence(v,controller,0,true);
   if(controller.cancelled)throw Error('İşlem iptal edildi.');
@@ -276,7 +290,7 @@ async function exportClips(){
  }catch(e){if(!controller.cancelled){status('Video oluşturulamadı: '+e.message,'error');if(fallback?.size)download(fallback,'reels-el-analizi.webm');}}
  finally{
   if(recorder&&recorder.state!=='inactive'){try{recorder.stop()}catch(e){}}
-  try{music?.stop()}catch(e){}try{v.pause()}catch(e){}
+  try{music?.stop()}catch(e){}try{narration?.stop()}catch(e){}try{v.pause()}catch(e){}
   try{stream?.getTracks().forEach(t=>t.stop())}catch(e){}
   try{canvasStream?.getTracks().forEach(t=>t.stop())}catch(e){}
   try{await context?.close()}catch(e){}
