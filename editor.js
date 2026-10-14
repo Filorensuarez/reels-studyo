@@ -28,6 +28,7 @@ function draw(v){
   g.fillStyle='#fff';g.shadowColor='#000';g.shadowBlur=5;
   visible.forEach((s,i)=>g.fillText(s,w/2,y+i*step,max));g.shadowBlur=0;
  }
+ if(window.ReelsSubtitles)window.ReelsSubtitles.draw(g,cv,currentTime);
 }
 function timelinePosition(pos){
  const length=total();pos=clamp(pos,0,Math.max(0,length));currentTime=pos;
@@ -40,6 +41,7 @@ function updateDuration(){
  timelinePosition(Math.min(currentTime,len));
 }
 function refreshList(){
+ if(window.ReelsSubtitles)window.ReelsSubtitles.invalidateOnEdit();
  const holder=$('clipList');
  if(!clips.length){holder.innerHTML='<p class="note">Video ekleyerek kesme, bölme ve birleştirme araçlarını kullanabilirsin.</p>';updateDuration();draw(null);return;}
  holder.innerHTML=clips.map((c,i)=>{
@@ -156,9 +158,9 @@ async function playSequence(v,controller,offset=0,prepared=false,onFirstFrame){
   await v.play();
   let stallSince=performance.now(),lastPosition=v.currentTime;
   while(!controller.cancelled){
-   draw(v);
    const nowPos=clamp(v.currentTime,from,c.to);
    timelinePosition(globalStart+(nowPos-c.from));
+   draw(v);
    if(v.currentTime>=c.to-.022||v.ended)break;
    if(v.currentTime>lastPosition+.015){lastPosition=v.currentTime;stallSince=performance.now();}
    if(performance.now()-stallSince>9000)throw Error('Video oynatımı durdu. Dosyayı veya tarayıcıyı kontrol et.');
@@ -389,6 +391,8 @@ window.ReelsQuickAPI={
  getClips(){let elapsed=0;return clips.map(c=>{const copy={id:c.id,asset:c.asset,from:c.from,to:c.to,timelineStart:elapsed};elapsed+=c.to-c.from;return copy;});},
  getTime(){return currentTime;},
  getTotal:total,
+ repaint(){draw(player)},
+ isBusy(){return Boolean(run)},
  seek:seekTo,
  pause:pauseAtCurrent,
  edit:quickAction,
