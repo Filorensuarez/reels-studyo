@@ -175,7 +175,7 @@ const comedyBeats=[
  'DANCE: a continuous full-body shot of the guest performing humorous spontaneous dance steps on the courtyard paving, with authentic weight shifts and expressive hand movements.',
  'REACTION: the camera drifts to laughing guests seated on plastic chairs and back to the dancer. Preserve believable clothing movement and night lighting.',
  'MUSIC: a traditional drummer appears near the dance area, the beat intensifies, and the dancer responds with a playful turn. Keep it an original gathering.',
- 'FINALE: the dancer does one fun final move as people clap and laugh; natural conclusion, no branded overlays.'
+ 'FINALE: the drummer strikes an upbeat rhythmic flourish as the dancer performs two humorous energetic dance moves, then bows toward clapping and laughing guests. Natural full-body motion and conclusion, no branded overlays.'
 ];
 const beats=[
  'Establish the location clearly; reveal the main character entering the scene as people turn their heads.',
@@ -254,7 +254,8 @@ function makeSegments(seconds){
  return parts;
 }
 function makePrompt(settings,part,count){
- const beat=(settings.preset==='courtyard'?comedyBeats:beats)[(part.index-1)%beats.length];
+ const comedyIndex=count<=1?0:Math.round((part.index-1)/(count-1)*(comedyBeats.length-1));
+ const beat=settings.preset==='courtyard'?comedyBeats[comedyIndex]:beats[(part.index-1)%beats.length];
  return [
   'Generate a SINGLE, ORIGINAL '+part.duration.toFixed(1)+'-second vertical 9:16 AI video shot. Sequence: shot '+part.index+' of '+count+'.',
   'VISUAL STYLE: '+styleText[settings.style]+'.',
