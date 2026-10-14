@@ -49,8 +49,38 @@
    <label class="check"><input type="checkbox" id="keepAudio" checked> Videoların orijinal seslerini koru</label>
    <p class="note">Hazır müzikler özgün ve uygulamanın içindedir. Orijinal konuşma sesini koruyup müziği arka planda kısabilirsin.</p>
   </div>
+  <div class="panel" id="ttsPanel">
+   <h2>4. Kadın Sesleriyle Yapay Zekâ Seslendirmesi</h2>
+   <p class="note">El analizi metnini Türkçe okut. İlk olarak telefondaki kadın seslerini dinleyebilir, uygunluğu denetleyebilirsin. Yapay zekâ ile oluşturulan ses dosyasını videoya eklemek ayrıca mümkündür.</p>
+   <label for="narrationText">Seslendirilecek Türkçe metin</label>
+   <textarea id="narrationText" rows="5" maxlength="450" placeholder="Örnek: Bugün avuç içindeki yaşam çizgisinin geleneksel yorumunu inceleyeceğiz.">Bugün yaşam çizgisinin geleneksel el okuma kaynaklarındaki yorumunu inceleyeceğiz. Bu çizgiden kişinin ömrü ya da sağlığı bilimsel olarak tahmin edilemez.</textarea>
+   <label for="narratorStyle">Üç anlatım tonu</label>
+   <select id="narratorStyle">
+    <option value="soft">Yumuşak kadın anlatımı — sakin</option>
+    <option value="clear">Net kadın anlatımı — öğretici</option>
+    <option value="mystic">Mistik kadın anlatımı — yavaş</option>
+   </select>
+   <div class="row" style="margin-top:11px">
+    <button type="button" id="listenDeviceVoice" class="secondary">Kadın sesini dinle (telefon)</button>
+    <button type="button" id="stopDeviceVoice" class="outline">Sesi durdur</button>
+   </div>
+   <p id="deviceVoiceInfo" class="note">Telefonundaki Türkçe sesler cihazına göre değişir. Dinleme için kullanılan cihaz sesi doğrudan MP4'e aktarılamaz.</p>
+   <details class="advanced">
+    <summary>Deneysel yapay zekâ ses dosyası oluştur (ticari olmayan kullanım)</summary>
+    <p class="note">Türkçe MMS-TTS yapay zekâ modeli ilk kullanımda internetten indirilir ve cihazda işlem yapar. Model tek temel sestir; üç seçenek ayrı kadın modelleri değil, ses tonu/hız varyasyonlarıdır. Kadın tınısı garanti edilemez. Model lisansı CC BY-NC 4.0: ticari veya gelir elde edilen Reels videolarında kullanma.</p>
+    <label class="check"><input id="voiceLicenseConsent" type="checkbox"> Sesi yalnızca ticari olmayan içerikte kullanacağım ve modelin lisansını kabul ediyorum.</label>
+    <div class="row">
+     <button type="button" id="makeAiVoice" class="primary" style="flex:1">AI ses dosyası oluştur</button>
+     <button type="button" id="clearAiVoice" class="outline">Sesi kaldır</button>
+    </div>
+    <p class="status" id="voiceStatus" role="status" aria-live="polite">Seslendirme henüz oluşturulmadı.</p>
+    <audio id="generatedVoicePlayer" controls preload="none" style="width:100%" hidden></audio>
+    <a id="downloadAiVoice" class="voiceDownload" hidden>Seslendirmeyi WAV olarak indir</a>
+    <p class="note">AI ses kaydı oluşturulursa düzenleyici videoya otomatik ekler; oluşturulan ses dosyasını isteğe bağlı indirebilirsin.</p>
+   </details>
+  </div>
   <div class="panel">
-   <h2>4. Reels çıkış ayarları</h2>
+   <h2>5. Reels çıkış ayarları</h2>
    <div class="settings">
     <div><label for="outputSize">Çözünürlük</label><select id="outputSize"><option value="540">540 × 960 (hızlı)</option><option value="720" selected>720 × 1280 (önerilen)</option><option value="1080">1080 × 1920 (yüksek)</option></select></div>
     <div><label for="outputFps">Kare hızı</label><select id="outputFps"><option value="24" selected>24 FPS</option><option value="30">30 FPS</option></select></div>
@@ -122,6 +152,7 @@
 <script src="./editor.js"></script>
 <script src="./quick-editor.js"></script>
 <script src="./subtitles.js"></script>
+<script src="./narration.js"></script>
 <script>
 if('serviceWorker' in navigator) window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
 </script>
