@@ -34,3 +34,16 @@ export async function createTracker(){
     close(){tracker.close()}
   };
 }
+
+export async function createImageTracker(){
+ const {FaceLandmarker,FilesetResolver}=await import(BASE+'/vision_bundle.mjs');
+ const fileset=await FilesetResolver.forVisionTasks(BASE+'/wasm');
+ const tracker=await FaceLandmarker.createFromOptions(fileset,{
+  baseOptions:{modelAssetPath:MODEL,delegate:'CPU'},runningMode:'IMAGE',numFaces:5
+ });
+ return {detect(image){const result=tracker.detect(image);return (result.faceLandmarks||[]).map(points=>{
+  const xs=points.map(p=>p.x),ys=points.map(p=>p.y);
+  return {x:(Math.min(...xs)+Math.max(...xs))/2,y:(Math.min(...ys)+Math.max(...ys))/2,
+   width:Math.max(...xs)-Math.min(...xs),height:Math.max(...ys)-Math.min(...ys),landmarks:points};
+ })},close(){tracker.close()}};
+}
