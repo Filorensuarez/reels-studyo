@@ -117,6 +117,21 @@ async function generate(){
  finally{working=false;$('makeAiVoice').disabled=false;}
 }
 function clear(){currentAudio=null;resetWave();refreshStatus('Yapay zekâ ses kaydı kaldırıldı.');}
+$('importNarrator').addEventListener('change',async()=>{
+ const file=$('importNarrator').files?.[0];if(!file)return;
+ if(file.size>45*1024*1024){refreshStatus('Ses dosyası en fazla 45 MB olabilir.',true);return;}
+ let ctx=null;
+ try{
+  const C=window.AudioContext||window.webkitAudioContext;if(!C)throw Error('Telefon ses dosyasını çözemiyor.');
+  ctx=new C();const buffer=await ctx.decodeAudioData(await file.arrayBuffer());
+  const channels=buffer.numberOfChannels,samples=new Float32Array(buffer.length);
+  for(let ch=0;ch<channels;ch++){const data=buffer.getChannelData(ch);for(let i=0;i<samples.length;i++)samples[i]+=data[i]/channels;}
+  if(samples.length>buffer.sampleRate*180)throw Error('Ses en fazla üç dakika olabilir.');
+  currentAudio={samples,rate:buffer.sampleRate};displayWave();
+  refreshStatus('Ses dosyası eklendi: '+file.name+'. Videoya karıştırılacak. Kullanım hakkını kontrol et.');
+ }catch(e){refreshStatus('Dosya açılamadı: '+e.message,true);}
+ finally{try{await ctx?.close()}catch(e){}}
+});
 $('listenDeviceVoice').addEventListener('click',previewDevice);
 $('stopDeviceVoice').addEventListener('click',()=>synth?.cancel());
 $('makeAiVoice').addEventListener('click',generate);
