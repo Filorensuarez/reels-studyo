@@ -8,6 +8,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from face_swap import router as face_swap_router
+
 app = FastAPI(title="Reels Stüdyo AI", version="0.1.0")
 origin = os.getenv("FRONTEND_ORIGIN", "https://filorensuarez.github.io")
 app.add_middleware(CORSMiddleware, allow_origins=[origin], allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
@@ -45,3 +47,5 @@ async def video(req: VideoRequest):
     if not isinstance(job_id, str) or not job_id:
         raise HTTPException(status_code=502, detail="Video üreticisi geçerli bir iş numarası döndürmedi.")
     return {"job_id": job_id, "status": "queued"}
+
+app.include_router(face_swap_router)
