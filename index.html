@@ -69,7 +69,7 @@ Senin merakın ne? | Bir sonraki videoda hangi çizgiyi ele almamızı istersin?
 </select><button type="button" id="musicTestBtn" class="secondary" style="margin-top:9px;width:100%">♪ Müziği dinle</button>
 <p class="hint">Müzikler uygulama içinde üretilir. Dosya veya üyelik gerektirmez.</p>
 <label for="music">Kendi müziğin (isteğe bağlı)</label><input id="music" type="file" accept="audio/*"></div>
-    <div><label for="voice">Seslendirme kaydı</label><input id="voice" type="file" accept="audio/*"></div>
+    <div><label for="voice">Seslendirme kaydı</label><input id="voice" type="file" accept="audio/*" multiple><label for="savedVoice">Kayıtlı seslerim</label><select id="savedVoice"><option value="">Kayıtlı ses seç</option></select><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px"><button type="button" id="saveVoices" class="secondary">Sesleri hafızaya kaydet</button><button type="button" id="deleteVoice" class="outline">Seçili sesi sil</button></div><p id="voiceLibraryStatus" class="hint" role="status">Bir veya birden fazla MP3 yükleyip kaydedebilirsin.</p></div>
    </div>
    <label for="musicVol">Müzik sesi: <span id="musicVolNum">%28</span></label><input type="range" id="musicVol" min="0" max="100" value="28">
    <div class="grid">
@@ -109,7 +109,22 @@ const canvas = $('videoCanvas'); const ctx = canvas.getContext('2d', {alpha:fals
 let imageAssets=[], previewT=0, previewPlaying=false, previewStart=0, prevTick=0, busy=false, lastObjectURL=null;
 let deferredInstallPrompt = null;
 let activeMusicCtx=null,activeMusicSource=null,musicPlayGeneration=0;
-function hasSound(){return $('builtInMusic').value!=='none'||Boolean($('voice').files.length);}
+
+(function(){
+ const $=id=>document.getElementById(id),key='mySamples';let samples=[];
+ const message=t=>$('voiceLibraryStatus').textContent=t;
+ function db(){return new Promise((ok,no)=>{const r=indexedDB.open('reels-studyo-voice-library',1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('voices'))r.result.createObjectStore('voices')};r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+ async function read(){const d=await db();return new Promise((ok,no)=>{const r=d.transaction('voices','readonly').objectStore('voices').get(key);r.onsuccess=()=>{ok(r.result||[]);d.close()};r.onerror=()=>{no(r.error);d.close()}})}
+ async function write(){const d=await db();return new Promise((ok,no)=>{const t=d.transaction('voices','readwrite');t.objectStore('voices').put(samples,key);t.oncomplete=()=>{d.close();ok()};t.onerror=()=>{no(t.error);d.close()}})}
+ function render(){const sel=$('savedVoice'),current=sel.value;sel.replaceChildren();const blank=document.createElement('option');blank.value='';blank.textContent='Kayıtlı ses seç';sel.append(blank);samples.forEach((f,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=(i+1)+'. '+f.name;sel.append(o)});if(current!==''&&Number(current)<samples.length)sel.value=current}
+ $('voice').addEventListener('change',()=>{window.savedNarrationFile=null;message($('voice').files.length+' ses seçildi. Hafızaya almak için Kaydet düğmesine bas.');$('savedVoice').value=''});
+ $('savedVoice').addEventListener('change',()=>{const i=$('savedVoice').value;window.savedNarrationFile=i===''?null:samples[Number(i)];message(window.savedNarrationFile?'Seçili ses: '+window.savedNarrationFile.name:'Kayıtlı ses seçilmedi.')});
+ $('saveVoices').addEventListener('click',async()=>{const incoming=Array.from($('voice').files||[]);if(!incoming.length){message('Önce ses dosyalarını seç.');return}try{for(const f of incoming){if(f.size>45*1048576)throw Error(f.name+' 45 MB sınırını aşıyor.');if(samples.length>=15)throw Error('En fazla 15 ses saklanabilir.');samples.push(f)}await write();render();$('savedVoice').value=String(samples.length-incoming.length);window.savedNarrationFile=samples[Number($('savedVoice').value)];$('voice').value='';message(samples.length+' ses bu telefonun tarayıcı hafızasına kaydedildi. Açılır listeden istediğini seç.')}catch(e){message('Kaydedilemedi: '+e.message)}});
+ $('deleteVoice').addEventListener('click',async()=>{const i=$('savedVoice').value;if(i===''){message('Silmek için listeden ses seç.');return}samples.splice(Number(i),1);window.savedNarrationFile=null;try{await write();render();message('Seçilen ses silindi.')}catch(e){message('Silme başarısız: '+e.message)}});
+ read().then(list=>{samples=list;render();message(samples.length? samples.length+' kayıtlı ses hazır. Listeden birini seç.':'Henüz kayıtlı ses yok. Beş MP3 dosyasını seçip kaydet.')}).catch(e=>message('Tarayıcı ses kütüphanesi açılamadı: '+e.message));
+})();
+
+function hasSound(){return $('builtInMusic').value!=='none'||Boolean($('voice').files.length||window.savedNarrationFile);}
 async function loadChosenMusic(ctx){
  const id=$('builtInMusic').value;
  if(id==='none')return null;
@@ -202,7 +217,7 @@ function loadPhotos(){for(const img of imageAssets){if(img._src)URL.revokeObject
 async function prepAudio(audioCtx,destination,videoDur){
  const tracks=[];const m=await loadChosenMusic(audioCtx);
  if(m){const s=audioCtx.createBufferSource(),g=audioCtx.createGain();s.buffer=m;s.loop=true;g.gain.value=Number($('musicVol').value)/100;s.connect(g);g.connect(destination);tracks.push(s);}
- const file=$('voice').files[0];
+ const file=window.savedNarrationFile||$('voice').files[0];
  if(file){let b;try{b=await audioCtx.decodeAudioData(await file.arrayBuffer())}catch(e){throw Error('Seslendirme dosyası çözümlenemedi. MP3 veya WAV dene.');}
  const s=audioCtx.createBufferSource(),g=audioCtx.createGain();s.buffer=b;s.loop=false;g.gain.value=1;s.connect(g);g.connect(destination);tracks.push(s);}
  return tracks;
