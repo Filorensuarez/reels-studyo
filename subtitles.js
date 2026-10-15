@@ -207,13 +207,13 @@ async function autoGenerate(){
     cache.set(c.asset.url,decoded);
    }
    const piece=c.to-c.from;
-   for(let k=0;k<piece;k+=20){
+   for(let k=0;k<piece;k+=30){
     if(stopRequested||epoch!==editEpoch)throw Error('İşlem durduruldu veya montaj değişti.');
-    const from=clamp(c.from+k,0,decoded.duration-.12),to=clamp(c.from+Math.min(piece,k+20),from+.1,decoded.duration);
+    const from=clamp(c.from+k,0,decoded.duration-.12),to=clamp(c.from+Math.min(piece,k+30),from+.1,decoded.duration);
     if(to-from<.2)continue;
     feedback((i+1)+'. video, '+Math.floor(k)+'–'+Math.floor(Math.min(piece,k+20))+' saniyeleri dinleniyor...');
     const signal=await resampleSection(decoded,from,to);
-    const result=await transcriber(signal,{language:'turkish',task:'transcribe',return_timestamps:true});
+    const result=await transcriber(signal,{language:'turkish',task:'transcribe',return_timestamps:false});
     output.push(...normalizedResult(result,c.timelineStart+k,to-from));
   }
   }
