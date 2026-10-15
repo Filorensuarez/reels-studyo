@@ -11,31 +11,30 @@ const synth=window.speechSynthesis;
 const info=$('deviceVoiceInfo'),status=$('voiceStatus'),audio=$('generatedVoicePlayer'),a=$('downloadAiVoice');
 const chosen=()=>PROFILES[$('narratorStyle').value]||PROFILES.soft;
 const supported=typeof SpeechSynthesisUtterance!=='undefined'&&!!synth;
+function genderPool(){
+ const female=/filiz|emel|zeynep|seda|ayşe|ayse|bayan|kadın|female|woman|demet|ece|sinem|aslı|asli|tülay|tulay|selin|merve|gamze|nazlı|nazli|gülsüm|gulsum/i;
+ const male=/cem|ahmet|mehmet|ali|murat|erkek|male|man|yusuf|kemal|barış|baris|onur|kaan|serkan|tolga|hakan|fatih|mustafa/i;
+ return voiceList.filter(v=>($('narratorGender').value==='male'?male:female).test(v.name));
+}
 function updateVoiceList(){
- if(!supported){info.textContent='Bu tarayıcı cihaz seslendirmesini desteklemiyor. Yapay zekâ modelini deneyebilirsin.';return;}
+ if(!supported){info.textContent='Tarayıcı cihaz seslendirmesini desteklemiyor.';return;}
  voiceList=synth.getVoices().filter(v=>/^tr([-_]|$)/i.test(v.lang));
- const femaleNames=/filiz|emel|zeynep|seda|ayşe|ayse|bayan|kadın|female|woman|demet|ece|sinem|aslı|asli|tülay|tulay|selin|merve|gamze|nazlı|nazli|gülsüm|gulsum/i;
- recognisedFemale=voiceList.filter(v=>femaleNames.test(v.name));
  const picker=$('deviceVoiceChoice'),old=picker.value;
- picker.replaceChildren();const automatic=document.createElement('option');automatic.value='';automatic.textContent='En doğal Türkçe ses (otomatik)';picker.append(automatic);
- voiceList.forEach((v,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=v.name+(v.localService?' — telefonda':' — çevrimiçi');picker.append(o)});
- if(old!==''&&Number(old)<voiceList.length)picker.value=old;
- if(recognisedFemale.length)info.textContent=recognisedFemale.length+' kadın olarak adlandırılan Türkçe cihaz sesi bulundu. Buradaki 3 seçenek ses tonu ve hızını da değiştirir. Cihaz sesini doğrudan video dosyasına aktaramayız.';
- else if(voiceList.length)info.textContent=voiceList.length+' Türkçe cihaz sesi bulundu ancak kadın sesi olduğu doğrulanamıyor. AI modelinin kadın sesi olduğu da garanti edilmez.';
- else info.textContent='Türkçe cihaz sesi bulunamadı. Telefonun dil/ses ayarlarından Türkçe ses indirilebilir veya deneysel AI seçeneği kullanılabilir.';
+ picker.replaceChildren();const automatic=document.createElement('option');automatic.value='';automatic.textContent='Uygun Türkçe ses (otomatik)';picker.append(automatic);
+ const pool=genderPool();
+ pool.forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=v.name+(v.localService?' — telefonda':' — çevrimiçi');picker.append(o)});
+ if(old&&pool.some(v=>v.name===old))picker.value=old;
+ info.textContent=pool.length?pool.length+' uygun isimli Türkçe ses bulundu. İstediğini seçip dinle.':'Bu telefonda seçilen cinsiyet için doğrulanabilir Türkçe ses bulunamadı. Telefonunun konuşma hizmeti ayarlarından başka bir ses yükleyebilirsin.';
 }
 function previewDevice(){
  if(!supported){info.textContent='Tarayıcı metni sese dönüştürmeyi desteklemiyor.';return;}
  const text=$('narrationText').value.trim();if(!text){info.textContent='Önce seslendirilecek metni yaz.';return;}
  synth.cancel();const profile=chosen(),u=new SpeechSynthesisUtterance(text.slice(0,450));u.lang='tr-TR';u.rate=profile.rate;u.pitch=profile.pitch;u.volume=1;
- const selected=$('deviceVoiceChoice').value;
- if(selected!==''&&voiceList[Number(selected)])u.voice=voiceList[Number(selected)];
- else{
-  const natural=voiceList.filter(v=>/google|neural|natural|premium|filiz|emel|zeynep|seda|ayşe|ayse|female|kadın/i.test(v.name));
-  u.voice=natural[0]||recognisedFemale[0]||voiceList[0]||null;
- }
+ const pool=genderPool();const selected=$('deviceVoiceChoice').value;
+ u.voice=pool.find(v=>v.name===selected)||pool[0]||null;
+ if(!u.voice){info.textContent='Seçilen türde Türkçe ses bulunamadı. Cihazın varsayılan sesi kullanılacak; kadın/erkek tonu garanti edilemez.';}
+ else info.textContent='Dinlenen ses: '+u.voice.name+'. Hız: '+profile.rate+'x.';
  u.onerror=e=>{info.textContent='Ses oynatılamadı: '+(e.error||'Bilinmeyen hata')};
- if(u.voice)info.textContent='Dinlenen ses: '+u.voice.name+'. Hız: '+profile.rate+'x. Bu sesin doğallığı telefonun ses motoruna bağlıdır.';
  synth.speak(u);
 }
 function refreshStatus(text,err=false){status.textContent=text;status.className='status'+(err?' error':'');}
@@ -155,6 +154,7 @@ $('listenDeviceVoice').addEventListener('click',previewDevice);
 $('stopDeviceVoice').addEventListener('click',()=>synth?.cancel());
 $('makeAiVoice').addEventListener('click',generate);
 $('clearAiVoice').addEventListener('click',clear);
+$('narratorGender').addEventListener('change',()=>{synth?.cancel();updateVoiceList();});
 $('narratorStyle').addEventListener('change',()=>{synth?.cancel();if(hasAudio())displayWave();});
 $('narrationText').addEventListener('input',()=>{if(hasAudio()&&currentAudio.origin==='ai'){currentAudio=null;resetWave();refreshStatus('Metin değiştirildi. Yeni metin için yeniden ses dosyası oluştur.');}});
 if(supported){updateVoiceList();synth.addEventListener?.('voiceschanged',updateVoiceList);setTimeout(updateVoiceList,650);}
