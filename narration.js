@@ -140,6 +140,22 @@ async function generate(){
  finally{working=false;$('makeAiVoice').disabled=false;}
 }
 function clear(){currentAudio=null;resetWave();refreshStatus('Yapay zekâ ses kaydı kaldırıldı.');}
+$('generatedMaleWav').addEventListener('change',async()=>{
+ const file=$('generatedMaleWav').files?.[0],label=$('maleWavStatus');
+ if(!file)return;
+ if(file.size>40*1048576){label.textContent='Dosya çok büyük (en fazla 40 MB).';return;}
+ let ctx;
+ try{
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)throw Error('Ses desteği yok');
+  ctx=new AudioCtx();const buffer=await ctx.decodeAudioData(await file.arrayBuffer());
+  if(buffer.duration>180)throw Error('Ses 3 dakikadan uzun olamaz');
+  const samples=new Float32Array(buffer.length);
+  for(let ch=0;ch<buffer.numberOfChannels;ch++){const channel=buffer.getChannelData(ch);for(let i=0;i<samples.length;i++)samples[i]+=channel[i]/buffer.numberOfChannels;}
+  currentAudio={samples,rate:buffer.sampleRate,origin:'uploaded'};displayWave();
+  label.textContent='Erkek sesi eklendi: '+file.name+'. Video dışa aktarımında kullanılacak.';
+ }catch(e){label.textContent='Ses dosyası açılamadı: '+e.message}
+ finally{try{await ctx?.close()}catch(e){}}
+});
 $('listenDeviceVoice').addEventListener('click',previewDevice);
 $('stopDeviceVoice').addEventListener('click',()=>synth?.cancel());
 $('makeAiVoice').addEventListener('click',generate);
