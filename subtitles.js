@@ -97,10 +97,16 @@ function draw(ctx,canvas,time){
  const lines=wrapText(ctx,c.text,w*.88,2),max=lines.reduce((v,line)=>Math.max(v,ctx.measureText(line).width),0);
  const boxW=Math.min(w*.96,max+pad*2),boxH=lines.length*lineH+pad*1.5;
  const x=(w-boxW)/2,y=h*.89-boxH/2;
- ctx.fillStyle='rgba(0,0,0,.78)';ctx.beginPath();ctx.roundRect(x,y,boxW,boxH,Math.max(8,w*.024));ctx.fill();
- ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=S('subtitleColor').value==='yellow'?'#ffeb56':'#ffffff';
- ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=3;ctx.lineWidth=1;
- lines.forEach((line,i)=>ctx.fillText(line,w/2,y+pad*.65+lineH*(i+.5),w*.88));
+ const preset=window.ReelsShortsEffects?.preset()||'none';
+ if(preset==='none'){
+  ctx.fillStyle='rgba(0,0,0,.78)';ctx.beginPath();ctx.roundRect(x,y,boxW,boxH,Math.max(8,w*.024));ctx.fill();
+ }else if(preset==='red'){
+  ctx.fillStyle='rgba(180,0,0,.92)';ctx.fillRect(x,y,boxW,boxH);
+ }
+ ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.fillStyle=preset==='yellow'?'#ffeb38':preset==='red'?'#ffffff':preset==='white'?'#ffffff':S('subtitleColor').value==='yellow'?'#ffeb56':'#ffffff';
+ ctx.strokeStyle='#080808';ctx.lineJoin='round';ctx.lineWidth=preset==='none'?1:Math.max(3,fs*.14);ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=2;
+ lines.forEach((line,i)=>{const yy=y+pad*.65+lineH*(i+.5);if(preset!=='none')ctx.strokeText(line,w/2,yy,w*.88);ctx.fillText(line,w/2,yy,w*.88)});
  ctx.restore();
 }
 S('subtitleAdd').addEventListener('click',()=>{
