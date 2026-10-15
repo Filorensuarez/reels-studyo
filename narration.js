@@ -133,7 +133,7 @@ $('stopDeviceVoice').addEventListener('click',()=>synth?.cancel());
 $('makeAiVoice').addEventListener('click',generate);
 $('clearAiVoice').addEventListener('click',clear);
 $('narratorStyle').addEventListener('change',()=>{synth?.cancel();if(hasAudio())displayWave();});
-$('narrationText').addEventListener('input',()=>{if(hasAudio()){currentAudio=null;resetWave();refreshStatus('Metin değiştirildi. Yeni metin için yeniden ses dosyası oluştur.');}});
+$('narrationText').addEventListener('input',()=>{if(hasAudio()&&currentAudio.origin==='ai'){currentAudio=null;resetWave();refreshStatus('Metin değiştirildi. Yeni metin için yeniden ses dosyası oluştur.');}});
 if(supported){updateVoiceList();synth.addEventListener?.('voiceschanged',updateVoiceList);setTimeout(updateVoiceList,650);}
 window.ReelsNarration={hasAudio,getAudioBuffer,clear};
 })();
