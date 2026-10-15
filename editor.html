@@ -26,6 +26,7 @@
    <p class="note">Birden fazla MP4 veya telefonun desteklediği video dosyasını seçebilirsin. Videolar telefonda işlenir, bir sunucuya gönderilmez. 15–60 saniyelik kısa videolar önerilir.</p>
    <p id="fileStatus" class="status" role="status">Henüz video eklenmedi.</p>
   </div>
+  <div class="panel" id="photoScenePanel"><h2>Fotoğraftan hareketli video sahnesi</h2><p class="note">Fotoğrafı 9:16 dikey sahneye dönüştür. Yakınlaşma, uzaklaşma veya kaydırma uygula; sahneyi diğer videoların arasına ekle.</p><label for="photoSceneFile">Fotoğraf seç</label><input type="file" id="photoSceneFile" accept="image/jpeg,image/png,image/webp,image/*"><div class="settings"><div><label for="photoSceneDuration">Süre (saniye)</label><input id="photoSceneDuration" type="number" min="2" max="15" step="1" value="4"></div><div><label for="photoSceneMotion">Hareket</label><select id="photoSceneMotion"><option value="zoom">Yakınlaşma</option><option value="out">Uzaklaşma</option><option value="left">Sola kaydırma</option><option value="right">Sağa kaydırma</option><option value="still">Sabit</option></select></div></div><button type="button" id="photoSceneAdd" class="primary">Fotoğrafı video sahnesi olarak ekle</button><p class="status" id="photoSceneStatus">Fotoğraf seçip sahne oluştur.</p></div>
   <div class="panel">
    <h2>2. Düzenlenen parçalar</h2>
    <p class="note">Parçaları ön izlemenin altındaki büyük düğmelerle kesip birleştirebilirsin. Buradan ayrıca sıralama yapabilir, istediğin parçayı görüntüleyebilirsin.</p>
@@ -155,6 +156,7 @@
 <script src="./subtitles.js"></script>
 <script src="./markers.js"></script>
 <script src="./shorts-effects.js"></script>
+<script src="./photo-scenes.js"></script>
 <script src="./narration.js"></script>
 <script src="./semantic-reels.js"></script>
 <script>
