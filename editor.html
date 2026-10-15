@@ -101,6 +101,7 @@
 <p class="note" style="margin-top:0">Oynat, istediğin saniyede duraklat, ardından tek düğmeyle kes veya başka video ekle.</p>
 <label for="videoFiles" class="file-label compactFile">+ İlk videolarını yükle</label>
    <div class="phone"><canvas id="editCanvas" width="540" height="960"></canvas></div>
+   <details class="advanced" id="markerPanel" style="margin:12px 0;padding:12px;border:1px solid #48647d;border-radius:12px"><summary>Video içi işaretleme: ok, daire, kutu ve vurgu</summary><p class="note">Videoyu istediğin saniyede durdur. İşaret türünü seç, önizleme üzerindeki başlangıç ve bitiş noktalarına dokun. İşaretler seçtiğin süre boyunca videoda ve dışa aktarılan dosyada görünür.</p><label for="markerType">İşaret türü</label><select id="markerType"><option value="arrow">Ok</option><option value="circle">Daire</option><option value="rect">Dikdörtgen</option><option value="line">Çizgi</option><option value="highlight">Vurgu alanı</option></select><div class="settings"><div><label for="markerColor">Renk</label><input id="markerColor" type="color" value="#ffde33"></div><div><label for="markerWidth">Çizgi kalınlığı</label><input id="markerWidth" type="range" min="3" max="24" value="9"></div></div><div class="settings"><div><label for="markerStart">Başlangıç (sn)</label><input id="markerStart" type="number" min="0" step=".1" value="0"></div><div><label for="markerEnd">Bitiş (sn)</label><input id="markerEnd" type="number" min=".1" step=".1" value="3"></div></div><div class="row"><button type="button" id="markerNow" class="secondary">Şu andan başlat</button><button type="button" id="markerAdd" class="primary">İşaret ekle: videoya dokun</button></div><p id="markerStatus" class="status" role="status">İşaret eklemek için önce video yükle.</p><div id="markerList" class="subtitleEntries"></div></details>
    <div class="times"><span id="playLabel">00:00</span><span id="totalLabel">00:00</span></div>
    <input type="range" id="seekBar" min="0" max="1000" value="0" aria-label="Video zaman çizelgesi">
    <div class="controls"><button id="previewPlay" class="secondary">▶ Videoyu oynat</button><button id="previewStop" class="outline">Ⅱ Burada duraklat</button></div>
@@ -151,6 +152,7 @@
 <script src="./editor.js"></script>
 <script src="./quick-editor.js"></script>
 <script src="./subtitles.js"></script>
+<script src="./markers.js"></script>
 <script src="./narration.js"></script>
 <script src="./semantic-reels.js"></script>
 <script>
