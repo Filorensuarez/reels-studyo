@@ -13,7 +13,7 @@ const chosen=()=>PROFILES[$('narratorStyle').value]||PROFILES.soft;
 const supported=typeof SpeechSynthesisUtterance!=='undefined'&&!!synth;
 function genderPool(){
  const female=/filiz|emel|zeynep|seda|ayşe|ayse|bayan|kadın|female|woman|demet|ece|sinem|aslı|asli|tülay|tulay|selin|merve|gamze|nazlı|nazli|gülsüm|gulsum/i;
- const male=/cem|ahmet|mehmet|ali|murat|erkek|male|man|yusuf|kemal|barış|baris|onur|kaan|serkan|tolga|hakan|fatih|mustafa/i;
+ const male=/(?:^|\b)(?:cem|ahmet|mehmet|ali|murat|erkek|male|yusuf|kemal|barış|baris|onur|kaan|serkan|tolga|hakan|fatih|mustafa)(?:\b|$)/i;
  return voiceList.filter(v=>($('narratorGender').value==='male'?male:female).test(v.name));
 }
 function updateVoiceList(){
@@ -32,7 +32,7 @@ function previewDevice(){
  synth.cancel();const profile=chosen(),u=new SpeechSynthesisUtterance(text.slice(0,450));u.lang='tr-TR';u.rate=profile.rate;u.pitch=profile.pitch;u.volume=1;
  const pool=genderPool();const selected=$('deviceVoiceChoice').value;
  u.voice=pool.find(v=>v.name===selected)||pool[0]||null;
- if(!u.voice){info.textContent='Seçilen türde Türkçe ses bulunamadı. Cihazın varsayılan sesi kullanılacak; kadın/erkek tonu garanti edilemez.';}
+ if(!u.voice){info.textContent='Bu telefonda seçilen türde doğrulanmış Türkçe ses yok. Yanlışlıkla kadın sesi çalmamak için oynatma durduruldu. Telefonun konuşma hizmetinden uygun ses indir.';return;}
  else info.textContent='Dinlenen ses: '+u.voice.name+'. Hız: '+profile.rate+'x.';
  u.onerror=e=>{info.textContent='Ses oynatılamadı: '+(e.error||'Bilinmeyen hata')};
  synth.speak(u);
@@ -112,6 +112,7 @@ async function warmAndLevel(samples,rate){
  return result;
 }
 async function generate(){
+ if($('narratorGender').value==='male'){refreshStatus('Bu yapay zekâ modeli ayrı erkek sesi üretemiyor. Kadın sesini erkek olarak oynatmamak için üretim engellendi. Erkek sesi için telefondaki doğrulanmış erkek sesini kullan.',true);return;}
  if(working){refreshStatus('Seslendirme oluşturuluyor, lütfen bekle.');return;}
  if(!$('voiceLicenseConsent').checked){refreshStatus('Modelin ticari olmayan kullanım şartını kabul etmelisin. Gelir elde edilen içeriklerde bu modeli kullanma.',true);return;}
  const text=$('narrationText').value.trim().replace(/\s+/g,' ');if(!text){refreshStatus('Seslendirilecek metni yaz.',true);return;}
