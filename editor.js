@@ -424,8 +424,8 @@ async function exportMoment(start,end,title){
  const saved=clips.slice(),savedTime=currentTime;let elapsed=0,parts=[];
  for(const c of saved){const duration=c.to-c.from,a=Math.max(start,elapsed),b=Math.min(end,elapsed+duration);if(b-a>.05)parts.push({...c,id:++uid,from:round(c.from+a-elapsed),to:round(c.from+b-elapsed)});elapsed+=duration}
  if(!parts.length)return;
- clips.splice(0,clips.length,...parts);refreshList();
- try{await exportClips()}finally{clips.splice(0,clips.length,...saved);refreshList();await seekTo(Math.min(savedTime,total()));status('Seçilen Reels dışa aktarma işlemi tamamlandı. Ana montaj geri yüklendi.','ok')}
+ clips.splice(0,clips.length,...parts);updateDuration();
+ try{await exportClips()}finally{clips.splice(0,clips.length,...saved);updateDuration();await seekTo(Math.min(savedTime,total()));status('Seçilen Reels dışa aktarma işlemi tamamlandı. Ana montaj geri yüklendi.','ok')}
 }
 window.ReelsQuickAPI={
  getClips(){let elapsed=0;return clips.map(c=>{const copy={id:c.id,asset:c.asset,from:c.from,to:c.to,timelineStart:elapsed};elapsed+=c.to-c.from;return copy;});},
