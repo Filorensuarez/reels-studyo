@@ -200,6 +200,7 @@ async function autoGenerate(){
   }
   if(stopRequested||epoch!==editEpoch)throw Error('İşlem durduruldu veya montaj değişti.');
   audioCtx=new AudioContext();const cache=new Map(),output=[];
+  rows=[];renderRows();window.dispatchEvent(new CustomEvent('reels:transcript-start'));
   for(let i=0;i<clips.length;i++){
    const c=clips[i];if(stopRequested||epoch!==editEpoch)throw Error('İşlem durduruldu veya montaj değişti.');
    let decoded=cache.get(c.asset.url);
@@ -220,12 +221,13 @@ async function autoGenerate(){
     feedback((i+1)+'. video, '+Math.floor(k)+'–'+Math.floor(Math.min(piece,k+20))+' saniyeleri dinleniyor...');
     const signal=await resampleSection(decoded,from,to);
     const result=await transcriber(signal,{language:'turkish',task:'transcribe',return_timestamps:false});
-    output.push(...normalizedResult(result,c.timelineStart+k,to-from));
+    const fresh=normalizedResult(result,c.timelineStart+k,to-from);
+    output.push(...fresh);
+    if(fresh.length){for(const r of fresh)addRow(r.start,r.end,r.text,false);renderRows();window.dispatchEvent(new CustomEvent('reels:transcript-progress',{detail:{count:rows.length,processedSeconds:c.timelineStart+k+(to-from),totalSeconds:total}}));}
   }
   }
   if(stopRequested||epoch!==editEpoch)throw Error('İşlem durduruldu veya montaj değişti.');
   if(!output.length)throw Error('Anlaşılır konuşma bulunamadı. Bu video sessiz olabilir.');
-  rows=[];for(const r of output.slice(0,230))addRow(r.start,r.end,r.text,false);
   renderRows();status(rows.length+' altyazı oluşturuldu. Türkçe yazım ve zamanlamayı kontrol ederek MP4 oluştur.','ok');window.dispatchEvent(new CustomEvent('reels:transcript-ready',{detail:{count:rows.length}}));
  }catch(e){status('Otomatik altyazı tamamlanamadı: '+e.message+' Elle altyazı ekleme ve SRT yükleme kullanılabilir.','error');window.dispatchEvent(new CustomEvent('reels:transcript-error',{detail:{message:e.message}}));}
  finally{try{await audioCtx?.close()}catch(e){} autoRunning=false;stopRequested=false;button.textContent='Türkçe altyazıyı otomatik oluştur (deneysel)';}
