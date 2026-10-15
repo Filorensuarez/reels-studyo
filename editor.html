@@ -83,8 +83,9 @@
     <p class="note">AI ses kaydı oluşturulursa düzenleyici videoya otomatik ekler; oluşturulan ses dosyasını isteğe bağlı indirebilirsin.</p>
    </details>
   </div>
+  <div class="panel" id="shortsStylePanel"><h2>5. Shorts tarzı görsel efektler</h2><p class="note">Yüklediğin örnekteki gibi sarı-siyah altyazı, kırmızı-beyaz başlık ve hareketli yakınlaşma. Efektler önizlemeye ve dışa aktarılan videoya uygulanır.</p><label for="shortsPreset">Hazır görünüm</label><select id="shortsPreset"><option value="none">Kapalı</option><option value="yellow">Sarı yazı + siyah kontur</option><option value="white">Beyaz yazı + siyah kontur</option><option value="red">Kırmızı vurgu + beyaz yazı</option></select><label for="shortsHeadline">Büyük giriş başlığı</label><textarea id="shortsHeadline" rows="2" maxlength="110" placeholder="BU DETAYLAR SENDE VARSA"></textarea><div class="settings"><div><label for="shortsHeadlineStart">Başlık başlangıcı (sn)</label><input id="shortsHeadlineStart" type="number" value="0" min="0" step=".1"></div><div><label for="shortsHeadlineEnd">Başlık bitişi (sn)</label><input id="shortsHeadlineEnd" type="number" value="3" min=".1" step=".1"></div></div><label for="shortsZoom">Hareketli yakınlaşma</label><select id="shortsZoom"><option value="none">Kapalı</option><option value="gentle">Hafif (%8)</option><option value="strong">Belirgin (%18)</option></select><label for="shortsZoomDuration">Yakınlaşma döngüsü (saniye)</label><select id="shortsZoomDuration"><option value="2">2 saniye</option><option value="3" selected>3 saniye</option><option value="5">5 saniye</option></select><p class="note">Altyazı metinlerini mevcut altyazı bölümünden gir. Sarı-beyaz stil bu metinlere uygulanır.</p></div>
   <div class="panel">
-   <h2>5. Reels çıkış ayarları</h2>
+   <h2>6. Reels çıkış ayarları</h2>
    <div class="settings">
     <div><label for="outputSize">Çözünürlük</label><select id="outputSize"><option value="540">540 × 960 (hızlı)</option><option value="720" selected>720 × 1280 (önerilen)</option><option value="1080">1080 × 1920 (yüksek)</option></select></div>
     <div><label for="outputFps">Kare hızı</label><select id="outputFps"><option value="24" selected>24 FPS</option><option value="30">30 FPS</option></select></div>
@@ -153,6 +154,7 @@
 <script src="./quick-editor.js"></script>
 <script src="./subtitles.js"></script>
 <script src="./markers.js"></script>
+<script src="./shorts-effects.js"></script>
 <script src="./narration.js"></script>
 <script src="./semantic-reels.js"></script>
 <script>
