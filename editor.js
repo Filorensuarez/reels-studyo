@@ -31,6 +31,20 @@ function draw(v){
  if(window.ReelsTextOverlays)window.ReelsTextOverlays.draw(g,cv,currentTime);
  if(window.ReelsSubtitles)window.ReelsSubtitles.draw(g,cv,currentTime);
 }
+function transitionPaint(previous,elapsed){
+ if(!previous)return;
+ const type=$('transitionType')?.value||'none',duration=Number($('transitionDuration')?.value)||.6;
+ if(type==='none'||elapsed<0||elapsed>=duration)return;
+ const t=clamp(elapsed/duration,0,1),w=cv.width,h=cv.height;
+ g.save();g.shadowBlur=0;g.globalAlpha=1;
+ if(type==='fade'){g.globalAlpha=1-t;g.drawImage(previous,0,0,w,h)}
+ else if(type==='slide'){g.drawImage(previous,-t*w,0,w,h)}
+ else if(type==='wipe'){g.beginPath();g.rect(t*w,0,w*(1-t),h);g.clip();g.drawImage(previous,0,0,w,h)}
+ else if(type==='zoom'){g.globalAlpha=1-t;const scale=1+t*.35;g.drawImage(previous,(w-w*scale)/2,(h-h*scale)/2,w*scale,h*scale)}
+ else if(type==='flash'){g.fillStyle='#fff';g.globalAlpha=Math.max(0,1-Math.abs(t-.38)/.38);g.fillRect(0,0,w,h)}
+ else if(type==='black'){g.fillStyle='#000';g.globalAlpha=1-t;g.fillRect(0,0,w,h)}
+ g.restore();
+}
 function timelinePosition(pos){
  const length=total();pos=clamp(pos,0,Math.max(0,length));currentTime=pos;
  $('playLabel').textContent=fmt(pos);$('totalLabel').textContent=fmt(length);
@@ -146,7 +160,7 @@ function stopRun(){
  if(run.type==='preview'){run=null;stopMusic();$('previewPlay').textContent='▶ Ön izlemeyi oynat';}
 }
 async function playSequence(v,controller,offset=0,prepared=false,onFirstFrame){
- let first=true;
+ let first=true,previousFrame=null;
  const p=clipAt(offset);if(!p)return;
  let globalStart=p.startAt;
  for(let i=p.index;i<clips.length;i++){
@@ -162,6 +176,7 @@ async function playSequence(v,controller,offset=0,prepared=false,onFirstFrame){
    const nowPos=clamp(v.currentTime,from,c.to);
    timelinePosition(globalStart+(nowPos-c.from));
    draw(v);
+   if(i>0)transitionPaint(previousFrame,nowPos-c.from);
    if(v.currentTime>=c.to-.022||v.ended)break;
    if(v.currentTime>lastPosition+.015){lastPosition=v.currentTime;stallSince=performance.now();}
    if(performance.now()-stallSince>9000)throw Error('Video oynatımı durdu. Dosyayı veya tarayıcıyı kontrol et.');
@@ -169,6 +184,7 @@ async function playSequence(v,controller,offset=0,prepared=false,onFirstFrame){
   }
   v.pause();
   if(controller.cancelled)throw Error('İşlem iptal edildi.');
+  if(i<clips.length-1){previousFrame=document.createElement('canvas');previousFrame.width=cv.width;previousFrame.height=cv.height;const pg=previousFrame.getContext('2d');pg.fillStyle='#0a0e17';pg.fillRect(0,0,cv.width,cv.height);if(v.readyState>=2&&v.videoWidth){const w=cv.width,h=cv.height,scale=($('contain').checked?Math.min:Math.max)(w/v.videoWidth,h/v.videoHeight),dw=v.videoWidth*scale,dh=v.videoHeight*scale;pg.drawImage(v,(w-dw)/2,(h-dh)/2,dw,dh)}}
   globalStart+=c.to-c.from;
  }
  timelinePosition(total());draw(v);
