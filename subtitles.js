@@ -220,8 +220,8 @@ async function autoGenerate(){
   if(stopRequested||epoch!==editEpoch)throw Error('İşlem durduruldu veya montaj değişti.');
   if(!output.length)throw Error('Anlaşılır konuşma bulunamadı. Bu video sessiz olabilir.');
   rows=[];for(const r of output.slice(0,230))addRow(r.start,r.end,r.text,false);
-  renderRows();status(rows.length+' altyazı oluşturuldu. Türkçe yazım ve zamanlamayı kontrol ederek MP4 oluştur.','ok');
- }catch(e){status('Otomatik altyazı tamamlanamadı: '+e.message+' Elle altyazı ekleme ve SRT yükleme kullanılabilir.','error');}
+  renderRows();status(rows.length+' altyazı oluşturuldu. Türkçe yazım ve zamanlamayı kontrol ederek MP4 oluştur.','ok');window.dispatchEvent(new CustomEvent('reels:transcript-ready',{detail:{count:rows.length}}));
+ }catch(e){status('Otomatik altyazı tamamlanamadı: '+e.message+' Elle altyazı ekleme ve SRT yükleme kullanılabilir.','error');window.dispatchEvent(new CustomEvent('reels:transcript-error',{detail:{message:e.message}}));}
  finally{try{await audioCtx?.close()}catch(e){} autoRunning=false;stopRequested=false;button.textContent='Türkçe altyazıyı otomatik oluştur (deneysel)';}
 }
 S('autoSubtitles').addEventListener('click',autoGenerate);
