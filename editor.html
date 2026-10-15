@@ -124,7 +124,7 @@
  <div id="bestStatus" class="status" role="status" aria-live="polite"></div>
  <div id="bestResults"></div>
 </div>
-   <div class="subtitlePanel" id="subtitlePanel">
+   <div class="subtitlePanel" id="textCardsPanel"><h3>Videoya farklı stillerde yazı ekle</h3><p class="note">İstediğin saniyede başlayan ve biten yazılar ekle. Yazılar video ön izlemesinde ve çıktıda görünür.</p><label for="overlayText">Yazı</label><textarea id="overlayText" rows="3" maxlength="240" placeholder="Örnek: Hikâyemiz burada başlıyor..."></textarea><div class="settings"><div><label for="overlayStart">Başlangıç (saniye)</label><input id="overlayStart" type="number" min="0" step="0.1" value="0"></div><div><label for="overlayEnd">Bitiş (saniye)</label><input id="overlayEnd" type="number" min="0.1" step="0.1" value="3"></div></div><button type="button" id="overlayAt" class="secondary">Başlangıcı şu ana ayarla</button><div class="settings"><div><label for="overlayStyle">Yazı stili</label><select id="overlayStyle"><option value="classic">Klasik beyaz</option><option value="cinema">Sinematik</option><option value="neon">Neon</option><option value="box">Renkli kutu</option><option value="hand">El yazısı</option><option value="outline">Kalın kontür</option><option value="typewriter">Daktilo</option></select></div><div><label for="overlayPosition">Konum</label><select id="overlayPosition"><option value="top">Üst</option><option value="center" selected>Orta</option><option value="bottom">Alt</option></select></div></div><div class="settings"><div><label for="overlayColor">Yazı rengi</label><input type="color" id="overlayColor" value="#ffffff"></div><div><label for="overlaySize">Yazı boyutu</label><input type="range" id="overlaySize" min="22" max="80" value="42"></div></div><button type="button" id="overlayAdd" class="secondary full">+ Videoya yazı ekle</button><p id="overlayStatus" class="status" role="status"></p><div id="overlayList" class="subtitleEntries"></div></div><div class="subtitlePanel" id="subtitlePanel">
      <h3>Konuşmalara altyazı ekle</h3>
      <p class="note">Türkçe konuşmaları otomatik yazıya dökmeyi dene veya istediğin saniyeye kendin altyazı ekle. Altyazılar videoya işlenir.</p>
      <button type="button" id="autoSubtitles" class="secondary full">Türkçe altyazıyı otomatik oluştur (deneysel)</button>
@@ -153,6 +153,7 @@
 </main>
 <video id="player" playsinline preload="auto" class="decode" aria-hidden="true"></video>
 <script src="./music-library.js"></script>
+<script src="./text-overlays.js"></script>
 <script src="./editor.js"></script>
 <script src="./quick-editor.js"></script>
 <script src="./subtitles.js"></script>
