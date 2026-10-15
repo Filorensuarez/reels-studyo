@@ -52,19 +52,19 @@
    <p class="note">Hazır müzikler özgün ve uygulamanın içindedir. Orijinal konuşma sesini koruyup müziği arka planda kısabilirsin.</p>
   </div>
   <div class="panel" id="ttsPanel">
-   <h2>4. Yapay Ses ve Kendi Sesim</h2><div class="panel" style="border-color:#78a4b8;margin:12px 0"><h3>Benim Sesimle Oku — ücretsiz ses klonlama</h3><p class="note">Kaydettiğin ses örneklerinden birini kullanarak yeni Türkçe metin seslendirmek için ücretsiz açık kaynaklı Anka-TTS modelini Google Colab üzerinde çalıştırabilirsin. Bu işlem telefonda değil Colab bilgisayarında yapılır. Ücretsiz GPU erişimi garanti değildir.</p><p class="note">1. Kayıtlı seslerinden birini MP3 olarak indir veya telefonundan seç. 2. Aşağıdaki Colab defterini aç. 3. Ses dosyanı ve kayıtta söylediklerinin aynısını gir. 4. Metni yazıp WAV çıktısını indir. 5. Bu sayfadaki “Kendi ses kaydımı ekle” alanından WAV'ı videoya ekle.</p><a class="voiceDownload" style="display:inline-block;margin:8px 0" href="https://colab.research.google.com/github/Filorensuarez/reels-studyo/blob/main/benim-sesim-colab.ipynb" target="_blank" rel="noopener">Benim Sesimle Oku — ücretsiz Colab'ı aç</a><p class="note">Bu bölüm doğrudan telefonda ses klonlamaz; ayrı Colab çalışma ortamı gerektirir. Ses kayıtların Colab ortamına yüklenir.</p></div>
-   <p class="note">El analizi metnini Türkçe okut. İlk olarak telefondaki kadın seslerini dinleyebilir, uygunluğu denetleyebilirsin. Yapay zekâ ile oluşturulan ses dosyasını videoya eklemek ayrıca mümkündür.</p>
+   <h2>4. Yapay Kadın ve Erkek Sesi</h2>
+   <p class="note">El analizi metnini Türkçe okut. İlk olarak telefondaki kadın veya erkek seslerini dinleyebilir, uygunluğu denetleyebilirsin. Yapay zekâ ile oluşturulan ses dosyasını videoya eklemek ayrıca mümkündür.</p>
    <label for="narrationText">Seslendirilecek Türkçe metin</label>
    <textarea id="narrationText" rows="5" maxlength="450" placeholder="Örnek: Bugün avuç içindeki yaşam çizgisinin geleneksel yorumunu inceleyeceğiz.">Bugün yaşam çizgisinin geleneksel el okuma kaynaklarındaki yorumunu inceleyeceğiz. Bu çizgiden kişinin ömrü ya da sağlığı bilimsel olarak tahmin edilemez.</textarea>
-   <label for="narratorStyle">Üç anlatım tonu</label>
+   <label for="narratorGender">Ses türü</label><select id="narratorGender"><option value="female">Yapay kadın sesi</option><option value="male">Yapay erkek sesi</option></select><label for="narratorStyle">Anlatım tonu</label>
    <select id="narratorStyle">
-    <option value="soft">Yumuşak kadın anlatımı — sakin</option>
-    <option value="clear">Net kadın anlatımı — öğretici</option>
-    <option value="mystic">Mistik kadın anlatımı — yavaş</option>
+    <option value="soft">Yumuşak anlatım — sakin</option>
+    <option value="clear">Net anlatım — öğretici</option>
+    <option value="mystic">Mistik anlatım — yavaş</option>
    </select>
    <label for="deviceVoiceChoice">Telefonundaki Türkçe sesi seç</label><select id="deviceVoiceChoice"><option value="">En doğal Türkçe ses (otomatik)</option></select><p class="note">Gerçekçiliği belirleyen en önemli etken telefonunda yüklü ses motorudur. Buradan farklı sesleri dinleyip seçebilirsin.</p>
    <div class="row" style="margin-top:11px">
-    <button type="button" id="listenDeviceVoice" class="secondary">Kadın sesini dinle (telefon)</button>
+    <button type="button" id="listenDeviceVoice" class="secondary">Seçilen sesi dinle (telefon)</button>
     <button type="button" id="stopDeviceVoice" class="outline">Sesi durdur</button>
    </div>
    <p id="deviceVoiceInfo" class="note">Telefonundaki Türkçe sesler cihazına göre değişir. Dinleme için kullanılan cihaz sesi doğrudan MP4'e aktarılamaz.</p>
