@@ -2,9 +2,9 @@
 'use strict';
 const $=id=>document.getElementById(id);
 const PROFILES={
- soft:{rate:.93,pitch:1.16,aiRate:.95,title:'Yumuşak anlatım'},
- clear:{rate:1.04,pitch:1.12,aiRate:1.07,title:'Net anlatım'},
- mystic:{rate:.82,pitch:1.03,aiRate:.88,title:'Mistik anlatım'}
+ soft:{rate:.90,pitch:.98,aiRate:.95,title:'Yumuşak anlatım'},
+ clear:{rate:.99,pitch:1.00,aiRate:1.03,title:'Net anlatım'},
+ mystic:{rate:.84,pitch:.94,aiRate:.90,title:'Mistik anlatım'}
 };
 let voiceList=[],recognisedFemale=[],voiceModel=null,working=false,currentAudio=null,lastWavURL=null,chosenVoice=null;
 const synth=window.speechSynthesis;
@@ -90,6 +90,21 @@ function displayWave(){
  lastWavURL=URL.createObjectURL(blob);
  audio.src=lastWavURL;audio.hidden=false;a.href=lastWavURL;a.download='reels-turkce-ai-seslendirme.wav';a.hidden=false;
 }
+async function warmAndLevel(samples,rate){
+ if(!window.OfflineAudioContext)return samples;
+ const ctx=new OfflineAudioContext(1,samples.length,rate);
+ const b=ctx.createBuffer(1,samples.length,rate);b.copyToChannel(samples,0);
+ const source=ctx.createBufferSource();source.buffer=b;
+ const low=ctx.createBiquadFilter();low.type='lowshelf';low.frequency.value=220;low.gain.value=3.2;
+ const presence=ctx.createBiquadFilter();presence.type='peaking';presence.frequency.value=2900;presence.Q.value=.85;presence.gain.value=1.1;
+ const compressor=ctx.createDynamicsCompressor();compressor.threshold.value=-23;compressor.knee.value=14;compressor.ratio.value=2.5;compressor.attack.value=.006;compressor.release.value=.17;
+ source.connect(low);low.connect(presence);presence.connect(compressor);compressor.connect(ctx.destination);
+ source.start();const rendered=await ctx.startRendering();const result=Float32Array.from(rendered.getChannelData(0));
+ let peak=0;for(const x of result)peak=Math.max(peak,Math.abs(x));
+ const gain=peak>0?Math.min(1.65,.91/peak):1;
+ if(gain!==1)for(let i=0;i<result.length;i++)result[i]*=gain;
+ return result;
+}
 async function generate(){
  if(working){refreshStatus('Seslendirme oluşturuluyor, lütfen bekle.');return;}
  if(!$('voiceLicenseConsent').checked){refreshStatus('Modelin ticari olmayan kullanım şartını kabul etmelisin. Gelir elde edilen içeriklerde bu modeli kullanma.',true);return;}
@@ -110,9 +125,10 @@ async function generate(){
   const len=wave.reduce((s,x)=>s+x.length,0);
   if(len>samplerate*150)throw Error('Çıktı çok uzun. Daha kısa metin dene.');
   const samples=new Float32Array(len);let at=0;for(const x of wave){samples.set(x,at);at+=x.length;}
-  currentAudio={samples,rate:samplerate,origin:'ai'};
+  const polished=await warmAndLevel(samples,samplerate).catch(()=>samples);
+  currentAudio={samples:polished,rate:samplerate,origin:'ai'};
   displayWave();
-  refreshStatus('AI ses dosyası oluşturuldu. Dinle, WAV olarak indir veya video dışa aktarımına ekle. Bu model yalnızca ticari olmayan kullanım içindir.');
+  refreshStatus('AI ses dosyası oluşturuldu; sıcaklık, dolgunluk ve ses dengesi iyileştirildi. Dinle, WAV olarak indir veya video dışa aktarımına ekle. Bu model yalnızca ticari olmayan kullanım içindir.');
  }catch(e){refreshStatus('Seslendirme üretilemedi: '+(e?.message||String(e))+'. Telefonunda büyük modeli çalıştırmak mümkün olmayabilir.',true);}
  finally{working=false;$('makeAiVoice').disabled=false;}
 }
