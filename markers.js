@@ -14,8 +14,9 @@ function draw(ctx,cv,t){
   const x=m.x*w,y=m.y*h,X=m.X*w,Y=m.Y*h;
   ctx.save();ctx.strokeStyle=m.color;ctx.fillStyle=m.color;ctx.lineWidth=m.width*w/540;ctx.lineCap='round';ctx.lineJoin='round';
   ctx.shadowColor='rgba(0,0,0,.65)';ctx.shadowBlur=5;
-  if(m.type==='arrow'||m.type==='line'){
-   ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(X,Y);ctx.stroke();
+  if(m.type==='arrow'||m.type==='line'||m.type==='dotted'){
+   if(m.type==='dotted')ctx.setLineDash([Math.max(2,ctx.lineWidth*.35),Math.max(6,ctx.lineWidth*1.5)]);
+   ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(X,Y);ctx.stroke();ctx.setLineDash([]);
    if(m.type==='arrow'){
     const angle=Math.atan2(Y-y,X-x),head=Math.max(16,ctx.lineWidth*3);
     ctx.beginPath();ctx.moveTo(X,Y);ctx.lineTo(X-head*Math.cos(angle-.55),Y-head*Math.sin(angle-.55));ctx.moveTo(X,Y);ctx.lineTo(X-head*Math.cos(angle+.55),Y-head*Math.sin(angle+.55));ctx.stroke();
@@ -34,7 +35,7 @@ function render(){
  const holder=$('markerList');holder.replaceChildren();
  items.forEach((m,i)=>{
   const row=document.createElement('div');row.className='moment-card';
-  const label=document.createElement('span');label.textContent=(i+1)+'. '+({arrow:'Ok',circle:'Daire',rect:'Kutu',line:'Çizgi',highlight:'Vurgu'}[m.type])+' — '+m.start.toFixed(1)+'–'+m.end.toFixed(1)+' sn';
+  const label=document.createElement('span');label.textContent=(i+1)+'. '+({arrow:'Ok',circle:'Daire',rect:'Kutu',line:'Çizgi',dotted:'Noktalı çizgi',highlight:'Vurgu'}[m.type])+' — '+m.start.toFixed(1)+'–'+m.end.toFixed(1)+' sn';
   const del=document.createElement('button');del.type='button';del.className='outline';del.textContent='Sil';
   del.onclick=()=>{items.splice(i,1);render();repaint()};
   row.append(label,del);holder.append(row);
