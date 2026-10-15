@@ -28,6 +28,7 @@ function draw(v){
   g.fillStyle='#fff';g.shadowColor='#000';g.shadowBlur=5;
   visible.forEach((s,i)=>g.fillText(s,w/2,y+i*step,max));g.shadowBlur=0;
  }
+ if(window.ReelsTextOverlays)window.ReelsTextOverlays.draw(g,cv,currentTime);
  if(window.ReelsSubtitles)window.ReelsSubtitles.draw(g,cv,currentTime);
 }
 function timelinePosition(pos){
