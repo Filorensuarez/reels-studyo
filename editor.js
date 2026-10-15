@@ -33,6 +33,7 @@ function draw(v){
  if(window.ReelsShortsEffects)window.ReelsShortsEffects.zoom(g,cv,currentTime);
  if(window.ReelsMarkers)window.ReelsMarkers.draw(g,cv,currentTime);
  if(window.ReelsShortsEffects)window.ReelsShortsEffects.drawHeadline(g,cv,currentTime);
+ if(window.ReelsPictureOverlays)window.ReelsPictureOverlays.draw(g,cv,currentTime);
  if(window.ReelsCollage)window.ReelsCollage.watermark(g,cv);
 }
 function transitionPaint(previous,elapsed){
