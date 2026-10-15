@@ -30,7 +30,9 @@ function draw(v){
  }
  if(window.ReelsTextOverlays)window.ReelsTextOverlays.draw(g,cv,currentTime);
  if(window.ReelsSubtitles)window.ReelsSubtitles.draw(g,cv,currentTime);
+ if(window.ReelsShortsEffects)window.ReelsShortsEffects.zoom(g,cv,currentTime);
  if(window.ReelsMarkers)window.ReelsMarkers.draw(g,cv,currentTime);
+ if(window.ReelsShortsEffects)window.ReelsShortsEffects.drawHeadline(g,cv,currentTime);
 }
 function transitionPaint(previous,elapsed){
  if(!previous)return;
