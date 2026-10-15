@@ -117,21 +117,17 @@ async function generate(){
  finally{working=false;$('makeAiVoice').disabled=false;}
 }
 function clear(){currentAudio=null;resetWave();refreshStatus('Yapay zekâ ses kaydı kaldırıldı.');}
-$('importNarrator').addEventListener('change',async()=>{
- const file=$('importNarrator').files?.[0];if(!file)return;
- if(file.size>45*1024*1024){refreshStatus('Ses dosyası en fazla 45 MB olabilir.',true);return;}
- let ctx=null;
- try{
-  const C=window.AudioContext||window.webkitAudioContext;if(!C)throw Error('Telefon ses dosyasını çözemiyor.');
-  ctx=new C();const buffer=await ctx.decodeAudioData(await file.arrayBuffer());
-  const channels=buffer.numberOfChannels,samples=new Float32Array(buffer.length);
-  for(let ch=0;ch<channels;ch++){const data=buffer.getChannelData(ch);for(let i=0;i<samples.length;i++)samples[i]+=data[i]/channels;}
-  if(samples.length>buffer.sampleRate*180)throw Error('Ses en fazla üç dakika olabilir.');
-  currentAudio={samples,rate:buffer.sampleRate,origin:'uploaded'};displayWave();
-  refreshStatus('Ses dosyası eklendi: '+file.name+'. Videoya karıştırılacak. Kullanım hakkını kontrol et.');
- }catch(e){refreshStatus('Dosya açılamadı: '+e.message,true);}
- finally{try{await ctx?.close()}catch(e){}}
-});
+let voiceFiles=[],selectedVoice=-1;
+const voiceInfo=msg=>$('myVoiceStatus').textContent=msg;
+function openVoiceDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open('reels-studyo-voice-library',1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('voices'))req.result.createObjectStore('voices')};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function readVoiceDB(){const db=await openVoiceDB();return new Promise((resolve,reject)=>{const t=db.transaction('voices','readonly'),req=t.objectStore('voices').get('mySamples');req.onsuccess=()=>{resolve(req.result||[]);db.close()};req.onerror=()=>{reject(req.error);db.close()}})}
+async function writeVoiceDB(files){const db=await openVoiceDB();return new Promise((resolve,reject)=>{const t=db.transaction('voices','readwrite');t.objectStore('voices').put(files,'mySamples');t.oncomplete=()=>{db.close();resolve()};t.onerror=()=>{db.close();reject(t.error)}})}
+function renderVoiceFiles(){const holder=$('myVoiceList');holder.replaceChildren();voiceFiles.forEach((file,i)=>{const row=document.createElement('div');row.className='moment-card';const name=document.createElement('span');name.textContent=(i+1)+'. '+file.name+' ('+(file.size/1048576).toFixed(1)+' MB)';const use=document.createElement('button');use.type='button';use.className='secondary';use.textContent=i===selectedVoice?'Seçili ses':'Videoda kullan';use.onclick=()=>useVoice(i);const remove=document.createElement('button');remove.type='button';remove.className='outline';remove.textContent='Sil';remove.onclick=()=>{voiceFiles.splice(i,1);if(selectedVoice===i){selectedVoice=-1;currentAudio=null;resetWave()}else if(selectedVoice>i)selectedVoice--;renderVoiceFiles();voiceInfo('Liste değişti. Kaydet düğmesine bas.')};row.append(name,use,remove);holder.append(row)});}
+async function useVoice(index){const file=voiceFiles[index];if(!file)return;let ctx=null;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)throw Error('Ses çözümleme desteklenmiyor');ctx=new C();const buffer=await ctx.decodeAudioData(await file.arrayBuffer());const samples=new Float32Array(buffer.length);for(let ch=0;ch<buffer.numberOfChannels;ch++){const data=buffer.getChannelData(ch);for(let i=0;i<samples.length;i++)samples[i]+=data[i]/buffer.numberOfChannels}if(samples.length>buffer.sampleRate*180)throw Error('Ses en fazla üç dakika olabilir.');currentAudio={samples,rate:buffer.sampleRate,origin:'uploaded'};selectedVoice=index;displayWave();renderVoiceFiles();voiceInfo('Videoda kullanılacak ses: '+file.name+'. Kütüphaneyi saklamak için Kaydet düğmesine bas.')}catch(e){voiceInfo('Ses açılamadı: '+e.message)}finally{try{await ctx?.close()}catch(e){}}}
+$('importNarrator').addEventListener('change',async()=>{const files=Array.from($('importNarrator').files||[]);let added=0;for(const file of files){if(file.size>45*1048576){voiceInfo(file.name+' çok büyük (en fazla 45 MB).');continue}if(voiceFiles.length>=15){voiceInfo('En fazla 15 ses örneği eklenebilir.');break}voiceFiles.push(file);added++}renderVoiceFiles();if(added){voiceInfo(added+' yeni ses eklendi, toplam '+voiceFiles.length+'. Kaydet düğmesine bas.');if(selectedVoice<0)await useVoice(0)}$('importNarrator').value='';});
+$('saveMyVoices').addEventListener('click',async()=>{try{await writeVoiceDB(voiceFiles);voiceInfo(voiceFiles.length+' ses örneği bu cihazın tarayıcı belleğine kaydedildi.')}catch(e){voiceInfo('Kayıt başarısız: '+e.message+'. Telefon depolama alanını kontrol et.')}});
+$('clearMyVoices').addEventListener('click',async()=>{voiceFiles=[];selectedVoice=-1;currentAudio=null;resetWave();renderVoiceFiles();try{await writeVoiceDB([]);voiceInfo('Kayıtlı ses örnekleri temizlendi.')}catch(e){voiceInfo('Temizleme hatası: '+e.message)}});
+readVoiceDB().then(async files=>{voiceFiles=files;renderVoiceFiles();voiceInfo(files.length+' kayıtlı ses bulundu.');if(files.length)await useVoice(0)}).catch(()=>voiceInfo('Tarayıcı depolaması açılamadı; sesleri geçici olarak ekleyebilirsin.'));
 $('listenDeviceVoice').addEventListener('click',previewDevice);
 $('stopDeviceVoice').addEventListener('click',()=>synth?.cancel());
 $('makeAiVoice').addEventListener('click',generate);
