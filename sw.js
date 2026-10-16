@@ -1,5 +1,5 @@
-const CACHE='reels-studyo-pwa-v68';
-const APP=['./','./index.html','./editor.html','./post.html','./editor.js','./text-overlays.js','./semantic-reels.js','./quick-editor.js','./subtitles.js','./markers.js','./shorts-effects.js','./photo-scenes.js','./collage.js','./picture-overlays.js','./narration.js','./editor.css','./music-library.js','./manifest.webmanifest','./icons/icon.svg','./icons/icon-192.png','./icons/icon-512.png'];
+const CACHE='reels-studyo-pwa-v69';
+const APP=['./','./index.html','./editor.html','./post.html','./realistic-ai-video.html','./editor.js','./text-overlays.js','./semantic-reels.js','./quick-editor.js','./subtitles.js','./markers.js','./shorts-effects.js','./photo-scenes.js','./collage.js','./picture-overlays.js','./narration.js','./editor.css','./music-library.js','./manifest.webmanifest','./icons/icon.svg','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>{
  e.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP)));self.skipWaiting();
 });
