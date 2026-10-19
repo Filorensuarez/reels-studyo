@@ -1,12 +1,170 @@
-<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gerçekçi Yapay Zekâ Video — Reels Stüdyo</title><style>*{box-sizing:border-box}body{background:#0b1426;color:#f5f8ff;font:15px system-ui,Arial;margin:0}main,header{max-width:850px;margin:auto;padding:16px}.panel{background:#18283f;border:1px solid #405a75;border-radius:15px;padding:18px;margin:14px 0}h1{font-size:25px}h2{font-size:18px}label{display:block;margin:12px 0 6px}textarea,input,select{display:block;width:100%;border:1px solid #506a84;border-radius:10px;background:#0d1b2e;color:white;padding:12px;font:inherit}textarea{min-height:120px}button{background:#a8ffbf;border:0;border-radius:10px;color:#10231b;padding:13px 16px;font:inherit;font-weight:700;cursor:pointer}.secondary{background:#344e6b;color:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.actions{display:flex;flex-wrap:wrap;gap:10px}.note{font-size:13px;color:#b7c8dc;line-height:1.55}#result{white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}a{color:#a8ffbf}@media(max-width:540px){.row{grid-template-columns:1fr}}</style></head><body><header><a href="./index.html">← Reels Stüdyo</a><h1>Gerçekçi Yapay Zekâ Video</h1><p class="note">Yalnızca metinle gerçekçi video sahneleri tasarla. Fotoğraf yüklemen gerekmez.</p></header><main><section class="panel" id="characterSwap"><h2>AI Karakter Değiştirici</h2><p class="note">Videodaki kişiyi farklı bir karakterle değiştirmek için hazırlanan Android uyumlu atölyeyi aç. Video ve karakter fotoğrafı yükleyebilir, konumlandırma ön izlemesi oluşturabilir ve desteklenen tarayıcılarda WebM kaydedebilirsin.</p><p class="note">Önemli: Tam vücut, mimik ve dudak senkronizasyonuyla gerçekçi karakter değişimi henüz bağlı değildir; bunun için ayrı GPU modeli gerekir.</p></section><section class="panel"><h2>1. Sahneni anlat</h2><label for="scene">Videoda ne olsun?</label><textarea id="scene" placeholder="Örnek: Yağmurlu bir günde dağların arasındaki taş köprünün altından yükselen çamurlu sel suyu akıyor. Uzakta evler var.">Yağmurlu bir günde, yemyeşil dağların arasındaki köprünün altından hızla yükselen çamurlu sel suyu geçiyor. Uzakta köy evleri ve sisli tepeler görünüyor.</textarea><div class="row"><div><label for="camera">Kamera hareketi</label><select id="camera"><option value="Sabit telefon kamerası, elde çekilmiş hafif doğal titreme">Gerçek telefon kaydı</option><option value="Yavaş sinematik kamera kaydırması">Yavaş kamera kaydırma</option><option value="Sabit yüksek açılı drone çekimi">Drone</option><option value="Yavaş ileri kamera hareketi">İleri yaklaşma</option></select></div><div><label for="duration">Süre</label><select id="duration"><option>5 saniye</option><option selected>8 saniye</option><option>10 saniye</option></select></div></div><div class="row"><div><label for="ratio">Video biçimi</label><select id="ratio"><option>9:16 dikey</option><option>16:9 yatay</option><option>1:1 kare</option></select></div><div><label for="light">Işık ve hava</label><select id="light"><option>Kapalı hava, doğal gün ışığı</option><option>Güneşli gün, doğal ışık</option><option>Akşamüstü, altın saat</option><option>Gece, sokak ışıkları</option></select></div></div><label for="sound">Ortam sesi</label><select id="sound"><option>Gerçekçi ortam sesleri</option><option>Ortam sesi olmadan</option></select><label for="avoid">Olmasını istemediklerin</label><input id="avoid" value="çizgi film görünümü, yapay plastik dokular, fizik dışı hareketler, bozuk eller, bozuk binalar, yazı ve filigran"><div class="actions"><button id="build" type="button">Yapay zekâ video talimatı hazırla</button><button id="copy" class="secondary" type="button">Talimatı kopyala</button></div><p id="status" class="note">Önce sahneyi yaz, sonra talimatı oluştur.</p></section><section class="panel"><h2>Video üretim talimatı (isteğe bağlı)</h2><div id="result" class="note">Talimat burada görünecek.</div><p class="note">Bu talimatı video üreten bir yapay zekâ hizmetine yapıştırabilirsin. Ürettiğin videoyu Reels Stüdyo'da düzenleyebilirsin.</p><div class="actions"><a href="./editor.html">Video düzenleyiciye git →</a></div></section><section class="panel" id="production"><h2>2. Kendi stüdyomda video üret</h2><p class="note">Ücretsiz Google Colab GPU ile çalışan açık kaynak video motoru. Colab oturumunu bir kez başlat; ardından videoyu burada üret ve indir. GPU kotası sınırlıdır. Mevcut deneysel motor 1–3 saniyelik 256×256 çıktı hedefler; örnek futbol videosuyla aynı kalitede değildir. Wan 2.2 gibi güçlü modeller daha fazla GPU belleği gerektirir.</p><a target="_blank" rel="noopener noreferrer" href="https://colab.research.google.com/github/Filorensuarez/reels-studyo/blob/main/reels-video-colab.ipynb">1. Colab video motorunu başlat ↗</a><label for="colabUrl">2. Colab'da çıkan gradio.live adresini yapıştır</label><input id="colabUrl" type="url" placeholder="https://xxxxxxxx.gradio.live" autocomplete="off"><div class="row"><div><label for="aiSeconds">Süre</label><select id="aiSeconds"><option value="1">1 saniye</option><option value="2" selected>2 saniye</option><option value="3">3 saniye</option></select></div></div><div class="actions"><button id="aiGenerate" type="button">3. Video Oluştur</button></div><p id="aiState" class="note" role="status">Video üretimi Colab GPU'da yapılır. Bu sekmeyi ve Colab oturumunu açık tut.</p><video id="aiPreview" controls playsinline style="display:none;width:100%;max-height:480px;background:#000;border-radius:12px"></video><a id="aiDownload" download="reels-yapay-zeka-video.mp4" style="display:none;margin-top:12px" target="_blank" rel="noopener noreferrer">Üretilen videoyu indir ↗</a></section><section class="panel"><h2>Video üretimi hakkında</h2><p class="note">Gerçekçi yapay zekâ videosu için Sora, Google Veo veya başka bir video üretim sağlayıcısı kullanılabilir. Üretim seçilen harici modelin sunucusunda yapılır. Modellerin ücretsiz kotası ve çalışabilirliği değişebilir; bu uygulama sınırsız ücretsiz üretim sunmaz. Yapay zekâ ile üretilmiş afet görüntülerini gerçek olay kaydı olarak sunma.</p></section></main><script>(()=>{const $=id=>document.getElementById(id);function build(){const scene=$('scene').value.trim();if(!scene){$('status').textContent='Sahneyi yaz.';return}const prompt=['Photorealistic live-action video, indistinguishable in visual style from authentic documentary footage.','Scene: '+scene,'Camera: '+$('camera').value+'.','Lighting and weather: '+$('light').value+'.','Aspect ratio: '+$('ratio').value+'. Duration: '+$('duration').value+'.','Audio: '+$('sound').value+'.','Natural motion, consistent physical interactions, realistic water and gravity, detailed materials, believable scale, temporal consistency, stable geometry, natural exposure, accurate reflections and shadows.','Avoid: '+$('avoid').value+'.','Single continuous shot, no cuts unless explicitly requested.'];$('result').textContent=prompt.join('\n');$('status').textContent='Talimat hazır. Kopyalayıp video üretim aracına yapıştırabilirsin.'} $('build').onclick=build;$('copy').onclick=async()=>{if($('result').textContent==='Talimat burada görünecek.')build();try{await navigator.clipboard.writeText($('result').textContent);$('status').textContent='Talimat kopyalandı.'}catch(e){$('status').textContent='Kopyalama izni verilmedi. Metni seçerek kopyalayabilirsin.'}}})();</script><script type="module">
-import {Client} from "https://esm.sh/@gradio/client@1.15.0";
-const $=id=>document.getElementById(id);let busy=false;
-$('aiGenerate').onclick=async()=>{
- if(busy)return;
- const prompt=$('scene').value.trim(),url=$('colabUrl').value.trim().replace(/\\/$/,'');
- if(!prompt){$('aiState').textContent='Önce sahneyi yaz.';return}
- if(!/^https:\/\/[a-z0-9-]+\.gradio\.live$/i.test(url)){$('aiState').textContent='Colab çıktısındaki https://...gradio.live bağlantısını gir.';return}
- busy=true;$('aiGenerate').disabled=true;$('aiState').textContent='GPU modeline bağlanılıyor. Video üretimi birkaç dakika sürebilir.';
- try{const client=await Client.connect(url);$('aiState').textContent='Video oluşturuluyor. Colab sekmesini kapatma.';const result=await client.predict('/predict',[prompt,Number($('aiSeconds').value)]);const data=result.data?.[0];const videoUrl=typeof data==='string'?data:(data?.url||data?.video?.url);if(!videoUrl)throw Error('Model video adresi döndürmedi.');$('aiPreview').src=videoUrl;$('aiPreview').style.display='block';$('aiDownload').href=videoUrl;$('aiDownload').style.display='inline-block';$('aiState').textContent='Video hazır. Ön izleyebilir ve indirebilirsin.'}catch(err){$('aiState').textContent='Üretim başarısız: '+(err?.message||err)+'. Colab motorunun çalıştığını kontrol et.'}finally{busy=false;$('aiGenerate').disabled=false}
-};
-</script></body></html>
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="Reels Stüdyo: videoları kes, böl, sırala, birleştir; mistik müzik ekle.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg">
+<link rel="stylesheet" href="./editor.css">
+<title>Canlı Yayından 5 Reels — Reels Stüdyo</title>
+</head>
+<body>
+<header class="top">
+ <a class="back" href="./index.html">← Reels Stüdyo</a> <a href="./post.html" style="color:#a8ffbf;margin-left:12px">Post Stüdyosu →</a>
+ <a href="./ai-video.html" style="font-size:13px;color:#a8ffbf;border:1px solid #60758b;border-radius:9px;text-decoration:none;padding:8px 11px">AI Video Atölyesi →</a>
+ <div class="identity"><span class="mark">R</span><div><h1>Canlı Yayından 5 Reels</h1><p>Videonu yükle · Konuşmayı analiz et · 5 Reels ön izle ve indir</p></div></div>
+</header>
+<main><div class="panel" style="border:1px solid #536c88;padding:16px;margin-bottom:16px"><strong>Canlı yayınından 5 Reels çıkar</strong><p>1. Videoyu yükle. 2. Aşağıdaki “Yapay zekâ ile 5 Reels bölümü belirle” düğmesine bas. 3. Bulunan bölümleri ön izle ve ayrı indir.</p><button type="button" class="secondary" onclick="document.getElementById('semanticPanel')?.scrollIntoView({behavior:'smooth'})">Reels analiz bölümüne git ↓</button></div>
+<div class="cols">
+ <section class="left">
+  <div class="panel">
+   <h2>1. Canlı yayın kaydını yükle</h2>
+   <label for="videoFiles" class="file-label">+ Telefona kayıtlı videoları seç</label>
+   <input type="file" id="videoFiles" accept="video/*" multiple>
+   <p class="note">Birden fazla MP4 veya telefonun desteklediği video dosyasını seçebilirsin. Videolar telefonda işlenir, bir sunucuya gönderilmez. 15–60 saniyelik kısa videolar önerilir.</p>
+   <p id="fileStatus" class="status" role="status">Henüz video eklenmedi.</p>
+  </div>
+  <div class="panel" id="pictureOverlayPanel"><h2>Video üstüne görsel ve belge ekle</h2><p class="note">Fotoğraf, diploma, logo veya şeffaf PNG görselini videonun üzerine yerleştir. Görünme süresini ve konumunu ayarla.</p><label for="pictureOverlayFile">Görsel seç</label><input type="file" id="pictureOverlayFile" accept="image/*"><div class="settings"><div><label for="pictureOverlayStart">Başlangıç (sn)</label><input id="pictureOverlayStart" type="number" min="0" step=".1" value="0"></div><div><label for="pictureOverlayEnd">Bitiş (sn)</label><input id="pictureOverlayEnd" type="number" min=".1" step=".1" value="3"></div></div><div class="settings"><div><label for="pictureOverlayPosition">Konum</label><select id="pictureOverlayPosition"><option value="center">Orta</option><option value="bottom">Alt orta</option><option value="top">Üst orta</option><option value="left">Sol orta</option><option value="right">Sağ orta</option></select></div><div><label for="pictureOverlaySize">Boyut</label><select id="pictureOverlaySize"><option value=".25">Küçük</option><option value=".45" selected>Orta</option><option value=".75">Büyük</option><option value=".95">Tam genişlik</option></select></div></div><div class="row"><button type="button" id="pictureOverlayNow" class="secondary">Şu andan başlat</button><button type="button" id="pictureOverlayAdd" class="primary">Görseli videoya ekle</button></div><p id="pictureOverlayStatus" class="status">Görsel seçerek başlayabilirsin.</p><div id="pictureOverlayList"></div></div>
+  <div class="panel" id="collagePanel"><h2>Fotoğraf kolajı ve filigran</h2><p class="note">2, 4 veya 9 fotoğrafı tek bir dikey sahnede birleştir. Kırmızı ok ve noktalı çizgiyle işaretleyip altyazı ekle.</p><label for="collageFiles">Kolaj fotoğrafları</label><input type="file" id="collageFiles" accept="image/*" multiple><div class="settings"><div><label for="collageLayout">Yerleşim</label><select id="collageLayout"><option value="2">2 fotoğraf</option><option value="4" selected>4 fotoğraf</option><option value="9">9 fotoğraf</option></select></div><div><label for="collageDuration">Süre (sn)</label><input id="collageDuration" type="number" min="2" max="15" value="4"></div></div><button id="collageAdd" type="button" class="primary">Kolaj sahnesi oluştur</button><p id="collageStatus" class="status">Kolaj için fotoğraf seç.</p><hr><label for="watermarkText">Instagram kullanıcı adı / filigran</label><input id="watermarkText" type="text" maxlength="50" placeholder="@hesabim"><label for="watermarkPosition">Filigran konumu</label><select id="watermarkPosition"><option value="left">Sol alt</option><option value="right">Sağ alt</option><option value="top">Sağ üst</option></select><label for="watermarkOpacity">Saydamlık</label><input id="watermarkOpacity" type="range" min="20" max="100" value="75"><p class="note">Filigran bütün video boyunca görünür. Sadece kendine ait veya kullanım hakkın olan görselleri kullan.</p></div>
+  <div class="panel" id="photoScenePanel"><h2>Fotoğraftan hareketli video sahnesi</h2><p class="note">Fotoğrafı 9:16 dikey sahneye dönüştür. Yakınlaşma, uzaklaşma veya kaydırma uygula; sahneyi diğer videoların arasına ekle.</p><label for="photoSceneFile">Fotoğraf seç</label><input type="file" id="photoSceneFile" accept="image/jpeg,image/png,image/webp,image/*"><div class="settings"><div><label for="photoSceneDuration">Süre (saniye)</label><input id="photoSceneDuration" type="number" min="2" max="15" step="1" value="4"></div><div><label for="photoSceneMotion">Hareket</label><select id="photoSceneMotion"><option value="zoom">Yakınlaşma</option><option value="out">Uzaklaşma</option><option value="left">Sola kaydırma</option><option value="right">Sağa kaydırma</option><option value="still">Sabit</option></select></div></div><button type="button" id="photoSceneAdd" class="primary">Fotoğrafı video sahnesi olarak ekle</button><p class="status" id="photoSceneStatus">Fotoğraf seçip sahne oluştur.</p></div>
+  <div class="panel">
+   <h2>2. Düzenlenen parçalar</h2>
+   <p class="note">Parçaları ön izlemenin altındaki büyük düğmelerle kesip birleştirebilirsin. Buradan ayrıca sıralama yapabilir, istediğin parçayı görüntüleyebilirsin.</p>
+   <div class="panel" style="margin:12px 0;border-color:#64748b"><h3>Gerçek yapay erkek sesi — Fahrettin (ücretsiz)</h3><p class="note">Erkek sesini kadın sesinden bağımsız Piper modeliyle oluştur. Ücretsiz Colab'da metnini seslendirip WAV dosyasını indir, sonra buradan videoya ekle. Doğrudan telefon içinde model çalıştırılmaz.</p><a class="voiceDownload" href="https://colab.research.google.com/github/Filorensuarez/reels-studyo/blob/main/erkek-sesi-colab.ipynb" target="_blank" rel="noopener">Erkek sesi oluştur (Colab)</a><label for="generatedMaleWav" style="display:block;margin-top:12px">Oluşturduğun erkek sesini videoya ekle (WAV)</label><input type="file" id="generatedMaleWav" accept="audio/wav,audio/*"><p class="status" id="maleWavStatus" role="status">Henüz erkek sesi dosyası eklenmedi.</p></div>
+   <details class="advanced"><summary>Parçaları ve ayrıntılı süreleri göster</summary><div id="clipList" class="clip-list"><p class="note">Yukarıdan video eklediğinde düzenleme araçları burada görünecek.</p></div></details>
+   <div class="duration" id="durationLabel">Birleştirilmiş süre: 00:00</div>
+  </div>
+  <div class="panel" id="transitionPanel"><h2>Videolar arası geçiş efektleri</h2><p class="note">Arka arkaya gelen iki video arasında kullanılacak geçiş şeklini seç. Ön izlemede ve oluşturulan videoda uygulanır.</p><label for="transitionType">Geçiş şekli</label><select id="transitionType"><option value="none">Kesme (efekt yok)</option><option value="fade" selected>Yumuşak geçiş</option><option value="slide">Kaydırma</option><option value="wipe">Perde açılma</option><option value="zoom">Yakınlaşma</option><option value="flash">Beyaz flaş</option><option value="black">Siyaha kararma</option></select><label for="transitionDuration">Geçiş süresi</label><select id="transitionDuration"><option value="0.3">0,3 saniye</option><option value="0.6" selected>0,6 saniye</option><option value="1">1 saniye</option><option value="1.5">1,5 saniye</option></select><p class="note">Geçiş, yeni klibin ilk saniyelerinde önceki klibin son görüntüsünü kullanır. Toplam video süresi değişmez.</p></div>
+  <div class="panel">
+   <h2>3. El analizine uygun müziği seç</h2>
+   <label for="editorMusic">Hazır enstrümantal müzikler</label>
+   <select id="editorMusic">
+    <option value="elokuma" selected>El Okuma Atmosferi</option>
+    <option value="mistik">Mistik Piyano</option>
+    <option value="meditasyon">Derin Meditasyon</option>
+    <option value="kadim">Kadim Ezgi</option>
+    <option value="gizem">Gizemli İzler</option>
+    <option value="huzur">Huzurlu Esinti</option>
+    <option value="odak">Sessiz Odak</option>
+    <option value="tanitim">Yumuşak Tanıtım</option>
+    <option value="none">Müzik yok</option>
+   </select>
+   <div class="row" style="margin-top:12px"><button type="button" id="sampleMusic" class="secondary">♪ Müziği dinle</button><div class="grow"><label for="musicGain">Müzik seviyesi: <span id="musicGainValue">%25</span></label><input type="range" id="musicGain" min="0" max="100" value="25"></div></div>
+   <label class="check"><input type="checkbox" id="keepAudio" checked> Videoların orijinal seslerini koru</label>
+   <p class="note">Hazır müzikler özgün ve uygulamanın içindedir. Orijinal konuşma sesini koruyup müziği arka planda kısabilirsin.</p>
+  </div>
+  <div class="panel" id="ttsPanel">
+   <h2>4. Yapay Kadın ve Erkek Sesi</h2>
+   <p class="note">El analizi metnini Türkçe okut. İlk olarak telefondaki kadın veya erkek seslerini dinleyebilir, uygunluğu denetleyebilirsin. Yapay zekâ ile oluşturulan ses dosyasını videoya eklemek ayrıca mümkündür.</p>
+   <label for="narrationText">Seslendirilecek Türkçe metin</label>
+   <textarea id="narrationText" rows="5" maxlength="450" placeholder="Örnek: Bugün avuç içindeki yaşam çizgisinin geleneksel yorumunu inceleyeceğiz.">Bugün yaşam çizgisinin geleneksel el okuma kaynaklarındaki yorumunu inceleyeceğiz. Bu çizgiden kişinin ömrü ya da sağlığı bilimsel olarak tahmin edilemez.</textarea>
+   <label for="narratorGender">Ses türü</label><select id="narratorGender"><option value="female">Yapay kadın sesi</option><option value="male">Yapay erkek sesi</option></select><label for="narratorStyle">Anlatım tonu</label>
+   <select id="narratorStyle">
+    <option value="soft">Yumuşak anlatım — sakin</option>
+    <option value="clear">Net anlatım — öğretici</option>
+    <option value="mystic">Mistik anlatım — yavaş</option>
+   </select>
+   <label for="deviceVoiceChoice">Telefonundaki Türkçe sesi seç</label><select id="deviceVoiceChoice"><option value="">En doğal Türkçe ses (otomatik)</option></select><p class="note">Gerçekçiliği belirleyen en önemli etken telefonunda yüklü ses motorudur. Buradan farklı sesleri dinleyip seçebilirsin.</p>
+   <div class="row" style="margin-top:11px">
+    <button type="button" id="listenDeviceVoice" class="secondary">Seçilen sesi dinle (telefon)</button>
+    <button type="button" id="stopDeviceVoice" class="outline">Sesi durdur</button>
+   </div>
+   <p id="deviceVoiceInfo" class="note">Telefonundaki Türkçe sesler cihazına göre değişir. Dinleme için kullanılan cihaz sesi doğrudan MP4'e aktarılamaz.</p>
+   <details class="advanced">
+    <summary>Deneysel yapay zekâ ses dosyası oluştur (ticari olmayan kullanım)</summary>
+    <p class="note">Türkçe MMS-TTS yapay zekâ modeli ilk kullanımda internetten indirilir ve cihazda işlem yapar. Model tek temel sestir; üç seçenek ayrı kadın modelleri değil, ses tonu/hız varyasyonlarıdır. Kadın tınısı garanti edilemez. Model lisansı CC BY-NC 4.0: ticari veya gelir elde edilen Reels videolarında kullanma.</p>
+    <label class="check"><input id="voiceLicenseConsent" type="checkbox"> Sesi yalnızca ticari olmayan içerikte kullanacağım ve modelin lisansını kabul ediyorum.</label>
+    <div class="row">
+     <button type="button" id="makeAiVoice" class="primary" style="flex:1">AI ses dosyası oluştur</button>
+     <button type="button" id="clearAiVoice" class="outline">Sesi kaldır</button>
+    </div>
+    <p class="status" id="voiceStatus" role="status" aria-live="polite">Seslendirme henüz oluşturulmadı.</p>
+    <audio id="generatedVoicePlayer" controls preload="none" style="width:100%" hidden></audio>
+    <a id="downloadAiVoice" class="voiceDownload" hidden>Seslendirmeyi WAV olarak indir</a>
+    <p class="note">AI ses kaydı oluşturulursa düzenleyici videoya otomatik ekler; oluşturulan ses dosyasını isteğe bağlı indirebilirsin.</p>
+   </details>
+  </div>
+  <div class="panel" id="shortsStylePanel"><h2>5. Shorts tarzı görsel efektler</h2><p class="note">Yüklediğin örnekteki gibi sarı-siyah altyazı, kırmızı-beyaz başlık ve hareketli yakınlaşma. Efektler önizlemeye ve dışa aktarılan videoya uygulanır.</p><label for="shortsPreset">Hazır görünüm</label><select id="shortsPreset"><option value="none">Kapalı</option><option value="yellow">Sarı yazı + siyah kontur</option><option value="white">Beyaz yazı + siyah kontur</option><option value="red">Kırmızı vurgu + beyaz yazı</option></select><label for="shortsHeadline">Büyük giriş başlığı</label><textarea id="shortsHeadline" rows="2" maxlength="110" placeholder="BU DETAYLAR SENDE VARSA"></textarea><div class="settings"><div><label for="shortsHeadlineStart">Başlık başlangıcı (sn)</label><input id="shortsHeadlineStart" type="number" value="0" min="0" step=".1"></div><div><label for="shortsHeadlineEnd">Başlık bitişi (sn)</label><input id="shortsHeadlineEnd" type="number" value="3" min=".1" step=".1"></div></div><label for="shortsZoom">Hareketli yakınlaşma</label><select id="shortsZoom"><option value="none">Kapalı</option><option value="gentle">Hafif (%8)</option><option value="strong">Belirgin (%18)</option></select><label for="shortsZoomDuration">Yakınlaşma döngüsü (saniye)</label><select id="shortsZoomDuration"><option value="2">2 saniye</option><option value="3" selected>3 saniye</option><option value="5">5 saniye</option></select><p class="note">Altyazı metinlerini mevcut altyazı bölümünden gir. Sarı-beyaz stil bu metinlere uygulanır.</p></div>
+  <div class="panel">
+   <h2>6. Reels çıkış ayarları</h2>
+   <div class="settings">
+    <div><label for="outputSize">Çözünürlük</label><select id="outputSize"><option value="540">540 × 960 (hızlı)</option><option value="720" selected>720 × 1280 (önerilen)</option><option value="1080">1080 × 1920 (yüksek)</option></select></div>
+    <div><label for="outputFps">Kare hızı</label><select id="outputFps"><option value="24" selected>24 FPS</option><option value="30">30 FPS</option></select></div>
+   </div>
+   <label class="check"><input type="checkbox" id="contain"> Görüntüyü kesmeden sığdır (siyah boşluk olabilir)</label>
+   <label for="captionText">Video üzerine kısa başlık (isteğe bağlı)</label>
+   <input id="captionText" type="text" maxlength="100" placeholder="Örnek: Yaşam çizgisinin geleneksel yorumu">
+   <p class="note">Dikey 9:16 biçiminde çıktı alınır. Yatay videolar varsayılan olarak dikey alanı dolduracak şekilde kırpılır.</p>
+  </div>
+ </section>
+ <aside class="right">
+  <div class="panel preview">
+   <h2>Videoyu İzle ve Düzenle</h2>
+<p class="note" style="margin-top:0">Oynat, istediğin saniyede duraklat, ardından tek düğmeyle kes veya başka video ekle.</p>
+<label for="videoFiles" class="file-label compactFile">+ İlk videolarını yükle</label>
+   <div class="phone"><canvas id="editCanvas" width="540" height="960"></canvas></div>
+   <details class="advanced" id="markerPanel" style="margin:12px 0;padding:12px;border:1px solid #48647d;border-radius:12px"><summary>Video içi işaretleme: ok, daire, kutu ve vurgu</summary><p class="note">Videoyu istediğin saniyede durdur. İşaret türünü seç, önizleme üzerindeki başlangıç ve bitiş noktalarına dokun. İşaretler seçtiğin süre boyunca videoda ve dışa aktarılan dosyada görünür.</p><label for="markerType">İşaret türü</label><select id="markerType"><option value="arrow">Ok</option><option value="circle">Daire</option><option value="rect">Dikdörtgen</option><option value="line">Çizgi</option><option value="dotted">Noktalı çizgi</option><option value="highlight">Vurgu alanı</option></select><div class="settings"><div><label for="markerColor">Renk</label><input id="markerColor" type="color" value="#ffde33"></div><div><label for="markerWidth">Çizgi kalınlığı</label><input id="markerWidth" type="range" min="3" max="24" value="9"></div></div><div class="settings"><div><label for="markerStart">Başlangıç (sn)</label><input id="markerStart" type="number" min="0" step=".1" value="0"></div><div><label for="markerEnd">Bitiş (sn)</label><input id="markerEnd" type="number" min=".1" step=".1" value="3"></div></div><div class="row"><button type="button" id="markerNow" class="secondary">Şu andan başlat</button><button type="button" id="markerAdd" class="primary">İşaret ekle: videoya dokun</button></div><p id="markerStatus" class="status" role="status">İşaret eklemek için önce video yükle.</p><div id="markerList" class="subtitleEntries"></div></details>
+   <div class="times"><span id="playLabel">00:00</span><span id="totalLabel">00:00</span></div>
+   <input type="range" id="seekBar" min="0" max="1000" value="0" aria-label="Video zaman çizelgesi">
+   <div class="controls"><button id="previewPlay" class="secondary">▶ Videoyu oynat</button><button id="previewStop" class="outline">Ⅱ Burada duraklat</button></div>
+<div class="quickEdit">
+ <p class="editHint">Videoyu durdurduğun saniyede aşağıdaki işlemleri yap.</p>
+ <p class="atLabel" id="atLabel">Seçili an: 00:00</p>
+ <div class="quickGrid">
+   <button type="button" id="quickSplit">Makas: Burada böl</button>
+   <button type="button" id="quickInsert">+ Buraya video ekle</button>
+   <button type="button" id="quickTrimStart">Başını buradan başlat</button>
+   <button type="button" id="quickTrimEnd">Sonunu burada bitir</button>
+   <button type="button" id="quickDelete" class="outline danger">Bu parçayı çıkar</button>
+   <button type="button" id="quickUndo" class="outline">Geri al</button>
+ </div>
+ <input type="file" id="quickInsertFiles" accept="video/*" multiple hidden>
+</div>
+<div hidden aria-hidden="true"><button id="findBest" type="button"></button><div id="bestStatus"></div><div id="bestResults"></div></div><div class="bestMoments" id="semanticMoments"><h3>Konuşmayı dinle, ayrı Reels konularını bul</h3><p class="note">Canlı yayın konuşmasını analiz ederek en fazla 5 Reels bölümü seçer. Her birini ön izleyebilir ve ayrı indirebilirsin. Ücretsiz konuşma tanıma modeli ilk kullanımda indirilir. Kesim noktaları otomatik tahmindir; konuşma ortasından kesilmediğini ön izlemede kontrol et. Uzun yayınlarda telefonun belleği yetersiz kalabilir.</p><label for="semanticMin">En kısa Reels</label><select id="semanticMin"><option value="15">15 saniye</option><option value="25" selected>25 saniye</option><option value="40">40 saniye</option></select><label for="semanticMax">En uzun Reels</label><select id="semanticMax"><option value="45">45 saniye</option><option value="60" selected>60 saniye</option><option value="90">90 saniye</option></select><button type="button" id="findSemantic" class="secondary full">Yapay zekâ ile 5 Reels bölümü belirle</button><p id="semanticStatus" class="status" role="status" aria-live="polite">Önce video yükle, ardından analizi başlat.</p><div id="semanticResults" class="subtitleEntries"></div></div>
+   <div class="subtitlePanel" id="textCardsPanel"><h3>Videoya farklı stillerde yazı ekle</h3><p class="note">İstediğin saniyede başlayan ve biten yazılar ekle. Yazılar video ön izlemesinde ve çıktıda görünür.</p><label for="overlayText">Yazı</label><textarea id="overlayText" rows="3" maxlength="240" placeholder="Örnek: Hikâyemiz burada başlıyor..."></textarea><div class="settings"><div><label for="overlayStart">Başlangıç (saniye)</label><input id="overlayStart" type="number" min="0" step="0.1" value="0"></div><div><label for="overlayEnd">Bitiş (saniye)</label><input id="overlayEnd" type="number" min="0.1" step="0.1" value="3"></div></div><button type="button" id="overlayAt" class="secondary">Başlangıcı şu ana ayarla</button><div class="settings"><div><label for="overlayStyle">Yazı stili</label><select id="overlayStyle"><option value="classic">Klasik beyaz</option><option value="cinema">Sinematik</option><option value="neon">Neon</option><option value="box">Renkli kutu</option><option value="hand">El yazısı</option><option value="outline">Kalın kontür</option><option value="typewriter">Daktilo</option></select></div><div><label for="overlayPosition">Konum</label><select id="overlayPosition"><option value="top">Üst</option><option value="center" selected>Orta</option><option value="bottom">Alt</option></select></div></div><div class="settings"><div><label for="overlayColor">Yazı rengi</label><input type="color" id="overlayColor" value="#ffffff"></div><div><label for="overlaySize">Yazı boyutu</label><input type="range" id="overlaySize" min="22" max="80" value="42"></div></div><button type="button" id="overlayAdd" class="secondary full">+ Videoya yazı ekle</button><p id="overlayStatus" class="status" role="status"></p><div id="overlayList" class="subtitleEntries"></div></div><div class="subtitlePanel" id="subtitlePanel">
+     <h3>Konuşmalara altyazı ekle</h3>
+     <p class="note">Türkçe konuşmaları otomatik yazıya dökmeyi dene veya istediğin saniyeye kendin altyazı ekle. Altyazılar videoya işlenir.</p>
+     <button type="button" id="autoSubtitles" class="secondary full">Türkçe altyazıyı otomatik oluştur (deneysel)</button>
+     <p class="note">İlk kullanımda ücretsiz konuşma tanıma modeli internetten indirilir; telefonunda yüksek bellek kullanabilir. Ses dosyası sunucuya yüklenmeden cihazında çözümlenmeye çalışılır. Otomatik sonuçları mutlaka düzelt.</p>
+     <div class="subtitleActions">
+       <button type="button" id="subtitleAdd" class="secondary">+ Bulunduğum ana altyazı</button>
+       <button type="button" id="subtitleImport" class="outline">SRT yükle</button>
+       <button type="button" id="subtitleExport" class="outline">SRT indir</button>
+     </div>
+     <input type="file" id="subtitleFile" accept=".srt,text/plain" hidden>
+     <div class="subtitleOptions">
+       <label for="subtitleColor">Altyazı rengi</label>
+       <select id="subtitleColor"><option value="white">Beyaz</option><option value="yellow">Sarı</option></select>
+     </div>
+     <p id="subtitleStatus" class="status" role="status" aria-live="polite">Altyazı eklemek için video yükle.</p>
+     <div id="subtitleEntries" class="subtitleEntries"></div>
+   </div>
+   <button id="makeVideo" class="primary" disabled>Birleştir ve Reels oluştur (MP4)</button>
+   <button id="cancelVideo" class="outline" hidden>İşlemi iptal et</button>
+   <p id="editorStatus" class="status" role="status" aria-live="polite">Videoları yükleyerek başlayabilirsin.</p>
+   <div id="editorDownload"></div>
+   <p class="note">İşlem sırasında ekranı açık tut. İlk MP4 dönüştürmesi gerekiyorsa internet bağlantısı ve ek telefon belleği kullanılabilir. Tarayıcı desteklemiyorsa WebM alternatif olarak sunulur.</p>
+  </div>
+ </aside>
+</div>
+</main>
+<video id="player" playsinline preload="auto" class="decode" aria-hidden="true"></video>
+<script src="./music-library.js"></script>
+<script src="./text-overlays.js"></script>
+<script src="./editor.js"></script>
+<script src="./quick-editor.js"></script>
+<script src="./subtitles.js"></script>
+<script src="./markers.js"></script>
+<script src="./shorts-effects.js"></script>
+<script src="./photo-scenes.js"></script>
+<script src="./collage.js"></script>
+<script src="./picture-overlays.js"></script>
+<script src="./narration.js"></script>
+<script src="./semantic-reels.js"></script>
+<script>
+if('serviceWorker' in navigator) window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
+</script>
+</body>
+</html>
