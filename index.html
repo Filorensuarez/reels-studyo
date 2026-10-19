@@ -250,7 +250,7 @@ try {const saved=JSON.parse(localStorage.getItem('reels-studyo-draft-v1')||'null
 function saveDraft(){try{const draft={};saveIds.forEach(id=>draft[id]=$(id).value);localStorage.setItem('reels-studyo-draft-v1',JSON.stringify(draft));}catch(e){}}
 for(const id of saveIds){ $(id).addEventListener('input',()=>{saveDraft();if(!busy){stopPreview();previewT=0;render(0)}});$(id).addEventListener('change',saveDraft); }
 $('draftBtn').addEventListener('click',saveDraft);$('sampleBtn').addEventListener('click',saveDraft);
-if(new URLSearchParams(location.search).get('kitap')==='1'){try{const d=JSON.parse(sessionStorage.getItem('reels-book-content-v1')||'null');if(d&&Array.isArray(d.items)){$('topic').value=d.title;$('kind').value='elanalizi';$('title').value=d.title.toLocaleUpperCase('tr-TR');$('script').value=d.items.map((x,j)=>'Bilgi '+(j+1)+' | '+x).join('\\n')+'\\nKaynak | '+d.source;saveDraft();}}catch(e){console.warn(e)}}
+if(new URLSearchParams(location.search).get('kitap')==='1'){try{const d=JSON.parse(sessionStorage.getItem('reels-book-content-v1')||'null');if(d&&Array.isArray(d.items)){$('topic').value=d.title;$('kind').value='elanalizi';$('title').value=d.title.toLocaleUpperCase('tr-TR');$('script').value=d.items.map((x,j)=>'Bilgi '+(j+1)+' | '+x).join('\\n');saveDraft();}}catch(e){console.warn(e)}}
 render(0);
 if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script>
