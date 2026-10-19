@@ -58,6 +58,6 @@ $('generate').onclick=()=>{
 };
 $('downloadAll').onclick=async()=>{if(!generated.length)return;$('message').textContent='Sayfalar indiriliyor. Tarayıcı birden fazla indirme için izin isteyebilir.';for(let i=0;i<generated.length;i++)await save(generated[i],i)};
 addPage();
-if(new URLSearchParams(location.search).get('kitap')==='1'){try{const d=JSON.parse(sessionStorage.getItem('reels-book-content-v1')||'null');if(d&&Array.isArray(d.items)){$('title').value=d.title;pages.querySelector('textarea').value=d.items.map((s,i)=>(i+1)+'. '+s).join('\\n')+'\\nKaynak: '+d.source;}}catch(e){console.warn(e)}}
+if(new URLSearchParams(location.search).get('kitap')==='1'){try{const d=JSON.parse(sessionStorage.getItem('reels-book-content-v1')||'null');if(d&&Array.isArray(d.items)){$('title').value=d.title;pages.querySelector('textarea').value=d.items.map((s,i)=>(i+1)+'. '+s).join('\\n');}}catch(e){console.warn(e)}}
 })();
 </script></body></html>
