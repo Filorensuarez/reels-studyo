@@ -1,4 +1,4 @@
-<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reels Stüdyo · Ücretsiz Otomatik SRT</title><style>body{margin:0;background:#101c30;color:#f4f8ff;font:16px system-ui}main{max-width:850px;margin:auto;padding:18px}.panel{background:#20314c;padding:18px;border-radius:15px;margin:16px 0}a{color:#b4ffd1}button,input,textarea{font:inherit}button{border:0;border-radius:9px;background:#a5fbc0;color:#10241a;padding:11px;margin:5px 4px;cursor:pointer}button:disabled{opacity:.5}textarea{width:100%;box-sizing:border-box;min-height:180px;background:#0e192c;color:white;padding:10px;border:1px solid #60758d;border-radius:9px}video{width:100%;max-height:360px}small{color:#c8d5e7}article{border:1px solid #526b86;padding:12px;border-radius:10px;margin:10px 0}#status{white-space:pre-wrap}progress{width:100%}</style></head><body><main><a href="./index.html">← Reels Stüdyo</a><h1>Videodan Otomatik SRT Oluştur</h1><p>MP4 videonu seç, Türkçe konuşmaları otomatik yazıya dönüştür ve SRT dosyasını ücretsiz indir.</p><div class="panel"><label>Video seç <input id="file" type="file" accept="video/*,audio/*"></label><video id="player" controls playsinline preload="none"></video><p><button id="transcribe">Türkçe konuşmayı çözümle</button><button id="stop">İşlemi durdur</button><button id="srtDownload" disabled>SRT indir</button></p><progress id="progress" value="0" max="100"></progress><p id="status" role="status">Hazır. İşlemler cihazda yapılır. İlk çalıştırmada ücretsiz konuşma modeli indirilir.</p><small>Uzun videolarda işlem çok uzun sürebilir veya telefon belleği yetmeyebilir. Uygulamayı açık tut. İnternet yalnızca model dosyasını indirmek için gerekir.</small></div><div class="panel"><h2>Oluşturulan SRT</h2><textarea id="srt" readonly placeholder="Konuşmalar çözümlendiğinde SRT metni burada görünecek."></textarea></div></main><script type="module">
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reels Stüdyo · Ücretsiz Otomatik SRT</title><style>body{margin:0;background:#101c30;color:#f4f8ff;font:16px system-ui}main{max-width:850px;margin:auto;padding:18px}.panel{background:#20314c;padding:18px;border-radius:15px;margin:16px 0}a{color:#b4ffd1}button,input,textarea{font:inherit}button{border:0;border-radius:9px;background:#a5fbc0;color:#10241a;padding:11px;margin:5px 4px;cursor:pointer}button:disabled{opacity:.5}textarea{width:100%;box-sizing:border-box;min-height:180px;background:#0e192c;color:white;padding:10px;border:1px solid #60758d;border-radius:9px}video{width:100%;max-height:360px}small{color:#c8d5e7}article{border:1px solid #526b86;padding:12px;border-radius:10px;margin:10px 0}#status{white-space:pre-wrap}progress{width:100%}</style></head><body><main><a href="./index.html">← Reels Stüdyo</a><h1>Videodan Otomatik SRT Oluştur</h1><p>MP4 videonu seç, Türkçe konuşmaları otomatik yazıya dönüştür ve SRT dosyasını ücretsiz indir.</p><div class="panel"><label>Video seç <input id="file" type="file" accept="video/*,audio/*"></label><video id="player" controls playsinline preload="none"></video><p><button id="transcribe">Türkçe konuşmayı çözümle</button><button id="stop">İşlemi durdur</button><button id="srtDownload" disabled>SRT indir</button></p><progress id="progress" value="0" max="100"></progress><p id="status" role="status">Hazır. İşlemler cihazda yapılır. İlk çalıştırmada ücretsiz konuşma modeli indirilir.</p><small>Uzun videoların sesi 25 saniyelik parçalar hâlinde oynatılarak işlenir; tüm video belleğe alınmaz. İşlem video süresinden uzun sürebilir. Ekranı açık tut.</small></div><div class="panel"><h2>Oluşturulan SRT</h2><textarea id="srt" readonly placeholder="Konuşmalar çözümlendiğinde SRT metni burada görünecek."></textarea></div></main><script type="module">
 const $=id=>document.getElementById(id);let inputFile=null,videoURL=null,asr=null,cues=[],busy=false,stopRequested=false,checkpointKey='',resumeIndex=0;
 const say=s=>$('status').textContent=s;const refreshDownload=()=>{$('srtDownload').disabled=!$('srt').value.trim()};$('stop').onclick=()=>{stopRequested=true;say('İşlem mevcut ses bölümünden sonra durdurulacak. Oluşturulan SRT korunur.')};
 $('file').onchange=e=>{inputFile=e.target.files[0];if(videoURL)URL.revokeObjectURL(videoURL);if(inputFile){checkpointKey='reels-srt-v1-'+inputFile.name+'-'+inputFile.size+'-'+inputFile.lastModified;let saved=null;try{saved=JSON.parse(localStorage.getItem(checkpointKey)||'null')}catch(e){}resumeIndex=Number.isInteger(saved?.next)&&saved.next>=0?saved.next:0;cues=Array.isArray(saved?.cues)?saved.cues:[];$('srt').value=cues.length?outputSrt():'';$('progress').value=0;refreshDownload();videoURL=URL.createObjectURL(inputFile);$('player').src=videoURL;say('Video seçildi: '+inputFile.name+(resumeIndex?' · '+resumeIndex+' bölüm daha önce işlendi. Kaldığın yerden devam edebilirsin.':'. SRT oluşturmak için Türkçe konuşmayı çözümle düğmesine bas.'))}};
@@ -10,5 +10,74 @@ function outputSrt(){return cues.map((c,i)=>(i+1)+'\n'+clock(c.start)+' --> '+cl
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}
 $('srtDownload').onclick=()=>{if(!$('srt').value.trim()){say('Henüz SRT oluşturulmadı. Önce videoyu seçip Türkçe konuşmayı çözümle düğmesine bas.');return;}try{download(new Blob(['\ufeff'+$('srt').value],{type:'text/plain;charset=utf-8'}),'reels-altyazi.srt');say('SRT indirme başlatıldı. Telefonunun İndirilenler klasörünü kontrol et.')}catch(e){say('SRT indirilemedi: '+(e.message||e))}};
 function resample(data,rate){if(rate===16000)return data;const ratio=rate/16000,len=Math.floor(data.length/ratio),out=new Float32Array(len);for(let i=0;i<len;i++){let pos=i*ratio,j=Math.floor(pos),f=pos-j;out[i]=data[j]*(1-f)+(data[Math.min(j+1,data.length-1)]||0)*f}return out}
-$('transcribe').onclick=async()=>{if(busy)return;if(!inputFile)return alert('Önce video seç.');if(inputFile.size>300*1048576&&!confirm('Büyük videolar telefon belleğini zorlayabilir. Program işlenen altyazıları tarayıcıda saklayacak ancak ses çözme sırasında bellek yetersizliği olabilir. Devam edilsin mi?'))return;busy=true;stopRequested=false;$('transcribe').disabled=true;let ctx;try{say('Konuşma tanıma modeli yükleniyor. İlk kullanımda internet gerekir...');if(!asr){const {pipeline,env}=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1');env.allowLocalModels=false;const options={dtype:'q8',progress_callback:p=>{if(p.status==='progress')say('Model indiriliyor: %'+Math.round(p.progress||0))}};let gpu=false;try{if(navigator.gpu){const adapter=await navigator.gpu.requestAdapter();gpu=!!adapter}}catch(e){}if(gpu){try{say('Hızlı grafik işlemcisi ile konuşma modeli açılıyor...');asr=await pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{...options,device:'webgpu'})}catch(e){say('Grafik işlemcisi kullanılamadı. Normal işlemciye geçiliyor...')}}if(!asr){asr=await pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{...options,device:'wasm'});}}say('Video sesi çözülüyor...');ctx=new (window.AudioContext||window.webkitAudioContext)();let buf=await inputFile.arrayBuffer();let decoded=await ctx.decodeAudioData(buf);let ratio=decoded.sampleRate/16000,len=Math.floor(decoded.length/ratio),audio=new Float32Array(len),channels=decoded.numberOfChannels;for(let k=0;k<channels;k++){const channel=decoded.getChannelData(k);for(let i=0;i<len;i++){let pos=i*ratio,j=Math.floor(pos),f=pos-j;audio[i]+=(channel[j]*(1-f)+(channel[Math.min(j+1,channel.length-1)]||0)*f)/channels}}buf=null;decoded=null;let chunk=30*16000,total=Math.ceil(audio.length/chunk);if(resumeIndex>=total){resumeIndex=0;cues=[]}refreshDownload();for(let i=resumeIndex;i<total;i++){if(stopRequested)break;let start=i*chunk/16000;let piece=audio.subarray(i*chunk,Math.min(audio.length,(i+1)*chunk));say('Türkçe konuşma çözümleniyor: %'+Math.round(i/total*100)+' ('+(i+1)+'/'+total+' bölüm)');let sum=0;for(let j=0;j<piece.length;j+=4)sum+=piece[j]*piece[j];const rms=Math.sqrt(sum/Math.ceil(piece.length/4));if(rms<0.0015){$('progress').value=Math.round((i+1)/total*100);try{localStorage.setItem(checkpointKey,JSON.stringify({next:i+1,cues}))}catch(e){}continue}let result=await asr(piece,{language:'turkish',task:'transcribe',return_timestamps:true,chunk_length_s:0,num_beams:1});let segments=(result.chunks||[]).filter(x=>x.text?.trim());if(segments.length){for(const x of segments){let st=Number(x.timestamp?.[0]),en=Number(x.timestamp?.[1]);if(!Number.isFinite(st))st=0;if(!Number.isFinite(en)||en<=st)en=piece.length/16000;cues.push({start:start+st,end:start+en,text:x.text.trim()})}}else if(result.text?.trim()){cues.push({start,end:start+piece.length/16000,text:result.text.trim()})}$('srt').value=outputSrt();refreshDownload();$('progress').value=Math.round((i+1)/total*100);try{localStorage.setItem(checkpointKey,JSON.stringify({next:i+1,cues}))}catch(e){}}if(!stopRequested){try{localStorage.removeItem(checkpointKey)}catch(e){}resumeIndex=0}say((stopRequested?'Durduruldu. ':'Tamamlandı. ')+cues.length+(cues.length?' altyazı oluşturuldu. SRT indir düğmesi artık kullanılabilir.':' altyazı oluşturuldu. Videoda konuşma algılanmadı; indirilecek SRT yok.'))}catch(e){say('İşlem tamamlanamadı: '+(e.message||e)+'. Telefon belleği veya tarayıcı desteği yetersiz olabilir. Oluşturulan kısım varsa SRT indirilebilir.')}finally{if(ctx)await ctx.close().catch(()=>{});busy=false;$('transcribe').disabled=false}};
+
+$('transcribe').onclick=async()=>{
+ if(busy)return;
+ if(!inputFile)return alert('Önce video seç.');
+ busy=true;stopRequested=false;$('transcribe').disabled=true;
+ let ctx,processor,source,mute,player=$('player');
+ try{
+  say('Türkçe konuşma modeli hazırlanıyor...');
+  if(!asr){
+   const {pipeline,env}=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1');
+   env.allowLocalModels=false;
+   const options={dtype:'q8',progress_callback:p=>{if(p.status==='progress')say('Model indiriliyor: %'+Math.round(p.progress||0))}};
+   if(navigator.gpu){try{const adapter=await navigator.gpu.requestAdapter();if(adapter)asr=await pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{...options,device:'webgpu'})}catch(e){}}
+   if(!asr)asr=await pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{...options,device:'wasm'});
+  }
+  if(!Number.isFinite(player.duration)||player.duration<=0){
+   await new Promise((resolve,reject)=>{if(player.readyState>=1&&Number.isFinite(player.duration))return resolve();player.addEventListener('loadedmetadata',resolve,{once:true});setTimeout(()=>reject(Error('Video süresi okunamadı')),15000)});
+  }
+  const duration=player.duration;
+  if(!Number.isFinite(duration))throw Error('Video süresi bilinmiyor. Dosya desteklenmiyor.');
+  const chunkSeconds=25,total=Math.ceil(duration/chunkSeconds);
+  if(resumeIndex>=total){resumeIndex=0;cues=[];$('srt').value='';refreshDownload()}
+  ctx=new (window.AudioContext||window.webkitAudioContext)();
+  source=ctx.createMediaElementSource(player);
+  processor=ctx.createScriptProcessor(4096,2,1);
+  mute=ctx.createGain();mute.gain.value=0;
+  source.connect(processor);processor.connect(mute);mute.connect(ctx.destination);
+  await ctx.resume();
+  for(let i=resumeIndex;i<total;i++){
+   if(stopRequested)break;
+   const begin=i*chunkSeconds,finish=Math.min(duration,(i+1)*chunkSeconds);
+   say('Ses alınıyor ve çözümleniyor: %'+Math.round(i/total*100)+' ('+(i+1)+'/'+total+')');
+   player.pause();player.currentTime=begin;
+   await new Promise((resolve,reject)=>{if(!player.seeking&&Math.abs(player.currentTime-begin)<0.15)return resolve();player.addEventListener('seeked',resolve,{once:true});setTimeout(()=>reject(Error('Video belirtilen zamana alınamadı')),15000)});
+   let buffers=[],count=0,done=false;
+   const samplesNeeded=Math.ceil((finish-begin)*ctx.sampleRate);
+   let finishCapture;
+   const capture=new Promise(resolve=>{finishCapture=resolve});
+   processor.onaudioprocess=e=>{
+    if(done)return;
+    const input=e.inputBuffer,channels=input.numberOfChannels,a=input.getChannelData(0),b=channels>1?input.getChannelData(1):a;
+    const length=Math.min(a.length,samplesNeeded-count);
+    if(length>0){const block=new Float32Array(length);for(let j=0;j<length;j++)block[j]=(a[j]+b[j])*.5;buffers.push(block);count+=length}
+    if(count>=samplesNeeded){done=true;finishCapture()}
+   };
+   const ended=()=>{done=true;finishCapture()};
+   player.addEventListener('ended',ended,{once:true});
+   await player.play();
+   await capture;
+   player.pause();processor.onaudioprocess=null;player.removeEventListener('ended',ended);
+   if(!count)throw Error('Video sesi okunamadı. Tarayıcı bu video biçimini desteklemiyor olabilir.');
+   const pcm=new Float32Array(count);let offset=0;for(const b of buffers){pcm.set(b,offset);offset+=b.length}buffers=[];
+   const piece=resample(pcm,ctx.sampleRate);
+   let sum=0;for(let j=0;j<piece.length;j+=4)sum+=piece[j]*piece[j];
+   if(Math.sqrt(sum/Math.ceil(piece.length/4))>=0.0015){
+    say('Türkçe konuşma çözümleniyor: '+(i+1)+' / '+total+' bölüm');
+    const result=await asr(piece,{language:'turkish',task:'transcribe',return_timestamps:true,chunk_length_s:0,num_beams:1});
+    const segments=(result.chunks||[]).filter(x=>x.text?.trim());
+    if(segments.length){for(const x of segments){let st=Number(x.timestamp?.[0]),en=Number(x.timestamp?.[1]);if(!Number.isFinite(st))st=0;if(!Number.isFinite(en)||en<=st)en=piece.length/16000;cues.push({start:begin+st,end:Math.min(duration,begin+en),text:x.text.trim()})}}
+    else if(result.text?.trim())cues.push({start:begin,end:finish,text:result.text.trim()});
+   }
+   $('srt').value=cues.length?outputSrt():'';refreshDownload();
+   $('progress').value=Math.round((i+1)/total*100);
+   try{localStorage.setItem(checkpointKey,JSON.stringify({next:i+1,cues}))}catch(e){}
+  }
+  if(!stopRequested){try{localStorage.removeItem(checkpointKey)}catch(e){}resumeIndex=0}
+  say((stopRequested?'Durduruldu. ':'Tamamlandı. ')+cues.length+' altyazı hazır. '+(cues.length?'SRT indirilebilir.':'Konuşma algılanmadı.'));
+ }catch(e){say('İşlem durdu: '+(e.message||e)+'. Kaydedilmiş bölümler varsa aynı videoyu seçip devam edebilirsin.')}
+ finally{player.pause();if(processor){processor.onaudioprocess=null;processor.disconnect()}if(source)source.disconnect();if(mute)mute.disconnect();if(ctx)await ctx.close().catch(()=>{});busy=false;$('transcribe').disabled=false}
+};
 </script></body></html>
