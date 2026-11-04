@@ -3,6 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+// Eski sürümlerin PWA önbelleğini tek seferlik temizle.
+(async()=>{
+ try{
+  const key='reels-studyo-cleanup-20261104-2';
+  if(sessionStorage.getItem(key))return;
+  sessionStorage.setItem(key,'1');
+  if('serviceWorker' in navigator){
+   const regs=await navigator.serviceWorker.getRegistrations();
+   await Promise.all(regs.filter(r=>r.scope.includes('/reels-studyo/')).map(r=>r.unregister()));
+  }
+  if('caches' in window){
+   const names=await caches.keys();
+   await Promise.all(names.filter(n=>n.startsWith('reels-studyo-pwa-')).map(n=>caches.delete(n)));
+  }
+  if(navigator.serviceWorker?.controller)location.replace(location.pathname+'?yenilendi=20261104');
+ }catch(e){console.warn('Önbellek temizlenemedi',e)}
+})();
+</script>
 <meta name="theme-color" content="#111827">
 <meta name="application-name" content="Reels Stüdyo">
 <meta name="mobile-web-app-capable" content="yes">
