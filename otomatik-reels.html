@@ -54,7 +54,8 @@ $('transcribe').onclick=async()=>{
   try{say('Hızlı ses çıkarma motoru yükleniyor...');await prepareFastAudio();say('Video oynatılmadan ses bölümleri çıkarılacak.')}catch(e){fastMode=false;say('Hızlı motor açılamadı: '+e.message+'. Normal yönteme geçiliyor.')}
   if(!fastMode){
   if(!audioGraph){ctx=new (window.AudioContext||window.webkitAudioContext)();source=ctx.createMediaElementSource(player);processor=ctx.createScriptProcessor(4096,2,1);mute=ctx.createGain();mute.gain.value=0;source.connect(processor);processor.connect(mute);mute.connect(ctx.destination);audioGraph={ctx,source,processor,mute}}else ({ctx,source,processor,mute}=audioGraph);
-  await ctx.resume();}\n  for(let i=resumeIndex;i<total;i++){
+  await ctx.resume();}
+  for(let i=resumeIndex;i<total;i++){
    if(stopRequested)break;
    const begin=i*chunkSeconds,finish=Math.min(duration,(i+1)*chunkSeconds);
    say('Ses alınıyor ve çözümleniyor: %'+Math.round(i/total*100)+' ('+(i+1)+'/'+total+')');
@@ -79,7 +80,7 @@ $('transcribe').onclick=async()=>{
    player.pause();processor.onaudioprocess=null;player.removeEventListener('ended',ended);
    if(!count)throw Error('Video sesi okunamadı. Tarayıcı bu video biçimini desteklemiyor olabilir.');
    const pcm=new Float32Array(count);let offset=0;for(const b of buffers){pcm.set(b,offset);offset+=b.length}buffers=[];
-   const piece=resample(pcm,ctx.sampleRate);
+   piece=resample(pcm,ctx.sampleRate);
    }
    let sum=0;for(let j=0;j<piece.length;j+=4)sum+=piece[j]*piece[j];
    if(Math.sqrt(sum/Math.ceil(piece.length/4))>=0.0015){
