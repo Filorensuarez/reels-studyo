@@ -120,6 +120,8 @@
    <button type="button" id="quickDelete" class="outline danger">Bu parçayı çıkar</button>
    <button type="button" id="quickUndo" class="outline">Geri al</button>
  </div>
+ <button type="button" id="quickSaveVideo" class="primary" style="width:100%;margin-top:14px;padding:17px;font-size:17px;background:#a8ffbf;color:#09251a">Videoyu kaydet / MP4 indir</button>
+ <p id="quickSaveStatus" class="status" role="status" aria-live="polite">Düzenleme bittikten sonra buraya dokun. Video hazırlanıp indirme bağlantısı gösterilecek.</p>
  <input type="file" id="quickInsertFiles" accept="video/*" multiple hidden>
 </div>
 <div hidden aria-hidden="true"><button id="findBest" type="button"></button><div id="bestStatus"></div><div id="bestResults"></div></div><div class="bestMoments" id="semanticMoments"><h3>Konuşmayı dinle, ayrı Reels konularını bul</h3><p class="note">Videonun sesini telefonunda yazıya dökerek konu değişimlerine, konuşma aralarına ve anlamlı cümlelere göre ayrı Reels önerileri hazırlar. Ücretsiz konuşma tanıma modeli ilk kullanımda indirilir. Sonuçlar otomatik tahmindir; kesmeden önce kontrol et.</p><label for="semanticMin">En kısa Reels</label><select id="semanticMin"><option value="15">15 saniye</option><option value="25" selected>25 saniye</option><option value="40">40 saniye</option></select><label for="semanticMax">En uzun Reels</label><select id="semanticMax"><option value="45">45 saniye</option><option value="60" selected>60 saniye</option><option value="90">90 saniye</option></select><button type="button" id="findSemantic" class="secondary full">Videoyu dinle ve Reels konularını ayır</button><p id="semanticStatus" class="status" role="status" aria-live="polite">Önce video yükle, ardından analizi başlat.</p><div id="semanticResults" class="subtitleEntries"></div></div>
@@ -155,6 +157,9 @@
 <script src="./text-overlays.js"></script>
 <script src="./editor.js"></script>
 <script src="./quick-editor.js"></script>
+<script>
+(()=>{const btn=document.getElementById("quickSaveVideo"),info=document.getElementById("quickSaveStatus"),exportBtn=document.getElementById("makeVideo"),download=document.getElementById("editorDownload"),status=document.getElementById("editorStatus");btn.addEventListener("click",()=>{if(exportBtn.disabled){info.textContent="Önce video yükle veya devam eden video işleminin tamamlanmasını bekle.";return}info.textContent="Video hazırlanıyor. İşlem sırasında bu sayfayı açık tut.";exportBtn.click();status.scrollIntoView({behavior:"smooth",block:"center"})});new MutationObserver(()=>{const link=download.querySelector("a[href]");if(link){info.textContent="Video hazır. Aşağıdaki indirme düğmesine dokun.";link.textContent="Hazır videoyu telefona indir";link.style.fontSize="17px";link.style.padding="18px";download.scrollIntoView({behavior:"smooth",block:"center"})}}).observe(download,{childList:true,subtree:true})})();
+</script>
 <script src="./subtitles.js"></script>
 <script src="./markers.js"></script>
 <script src="./shorts-effects.js"></script>
