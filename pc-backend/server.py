@@ -65,34 +65,34 @@ def process(video:UploadFile=File(...),face:UploadFile=File(...),audio:UploadFil
 def run_job(jid,src,snd,audio_present,ratio,resolution,start,end):
     folder=ROOT/jid
     try:
-            out=folder/"result.mp4"
-            cmd=["ffmpeg","-hide_banner","-loglevel","error","-y"]
-            if start:cmd+=["-ss",str(start)]
-            cmd+=["-i",str(src)]
-            if audio:cmd+=["-i",str(snd)]
-            if end is not None:cmd+=["-t",str(end-start)]
-            filters=[]
-            if resolution!="original":
-                h=int(resolution)
-                if ratio=="9:16":w=round(h*9/16/2)*2
-                elif ratio=="1:1":w=h
-                elif ratio=="16:9":w=round(h*16/9/2)*2
-                else:w=None
-                if w:filters=[f"scale={w}:{h}:force_original_aspect_ratio=increase",f"crop={w}:{h}", "setsar=1"]
-                else:filters=[f"scale=-2:{h}"]
-            if filters:cmd+=["-vf",",".join(filters)]
-            cmd+=["-map","0:v:0"]
-            if audio:cmd+=["-map","1:a:0","-shortest"]
-            else:cmd+=["-map","0:a?"]
-            cmd+=["-c:v","libx264","-preset","veryfast","-crf","23","-pix_fmt","yuv420p","-c:a","aac","-movflags","+faststart",str(out)]
-            run=subprocess.run(cmd,capture_output=True,text=True,timeout=1200)
-            if run.returncode or not out.exists():raise RuntimeError("FFmpeg işlemi başarısız: "+run.stderr[-300:])
+        out=folder/"result.mp4"
+        cmd=["ffmpeg","-hide_banner","-loglevel","error","-y"]
+        if start:cmd+=["-ss",str(start)]
+        cmd+=["-i",str(src)]
+        if audio_present:cmd+=["-i",str(snd)]
+        if end is not None:cmd+=["-t",str(end-start)]
+        filters=[]
+        if resolution!="original":
+            h=int(resolution)
+            if ratio=="9:16":w=round(h*9/16/2)*2
+            elif ratio=="1:1":w=h
+            elif ratio=="16:9":w=round(h*16/9/2)*2
+            else:w=None
+            if w:filters=[f"scale={w}:{h}:force_original_aspect_ratio=increase",f"crop={w}:{h}", "setsar=1"]
+            else:filters=[f"scale=-2:{h}"]
+        if filters:cmd+=["-vf",",".join(filters)]
+        cmd+=["-map","0:v:0"]
+        if audio_present:cmd+=["-map","1:a:0","-shortest"]
+        else:cmd+=["-map","0:a?"]
+        cmd+=["-c:v","libx264","-preset","veryfast","-crf","23","-pix_fmt","yuv420p","-c:a","aac","-movflags","+faststart",str(out)]
+        run=subprocess.run(cmd,capture_output=True,text=True,timeout=1200)
+        if run.returncode or not out.exists():raise RuntimeError("FFmpeg işlemi başarısız: "+run.stderr[-300:])
 
         with LOCK: JOBS[jid]["state"]="done"
     except Exception as exc:
         with LOCK:
-            JOBS[jid]["state"]="error"
-            JOBS[jid]["error"]=str(exc)[:350]
+        JOBS[jid]["state"]="error"
+        JOBS[jid]["error"]=str(exc)[:350]
 
 @app.get("/jobs/{job_id}")
 def status(job_id:str,authorization:str|None=Header(default=None)):
