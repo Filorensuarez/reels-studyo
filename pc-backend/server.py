@@ -50,9 +50,14 @@ def process(video:UploadFile=File(...),face:UploadFile=File(...),audio:UploadFil
     cleanup()
     jid=uuid.uuid4().hex; folder=ROOT/jid;folder.mkdir()
     try:
-        src=folder/"input.video"; safe_file(video,src)
+        src=folder/("input"+Path(video.filename or "").suffix.lower())
+        if src.suffix not in (".mp4",".mov",".mkv",".webm",".avi",".m4v",".3gp"):
+            src=folder/"input.mp4"
+        safe_file(video,src)
         safe_file(face,folder/"face.image",10*1024*1024)
-        snd=folder/"audio.input"
+        snd=folder/("audio"+Path(audio.filename or "").suffix.lower()) if audio else folder/"audio.mp3"
+        if snd.suffix not in (".mp3",".m4a",".wav",".aac",".ogg",".opus",".mp4",".mov",".webm"):
+            snd=folder/"audio.mp3"
         if audio:safe_file(audio,snd,100*1024*1024)
         with LOCK:
             JOBS[jid]={"state":"queued","created":time.time(),"path":str(folder/"result.mp4"),"error":None}
@@ -64,6 +69,7 @@ def process(video:UploadFile=File(...),face:UploadFile=File(...),audio:UploadFil
         raise
 def run_job(jid,src,snd,audio_present,ratio,resolution,start,end):
     folder=ROOT/jid
+    with LOCK: JOBS[jid]["state"]="processing"
     try:
         out=folder/"result.mp4"
         cmd=["ffmpeg","-hide_banner","-loglevel","error","-y"]
