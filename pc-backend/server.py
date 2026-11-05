@@ -91,8 +91,8 @@ def run_job(jid,src,snd,audio_present,ratio,resolution,start,end):
         with LOCK: JOBS[jid]["state"]="done"
     except Exception as exc:
         with LOCK:
-        JOBS[jid]["state"]="error"
-        JOBS[jid]["error"]=str(exc)[:350]
+            JOBS[jid]["state"]="error"
+            JOBS[jid]["error"]=str(exc)[:350]
 
 @app.get("/jobs/{job_id}")
 def status(job_id:str,authorization:str|None=Header(default=None)):
